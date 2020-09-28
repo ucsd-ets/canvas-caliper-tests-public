@@ -51,10 +51,133 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                     (By.CLASS_NAME, "navbar-header")
                 )
             )
-            assert (self.driver.current_url) == "https://www.ucsd.edu"
+            assert (self.driver.current_url) == "https://www.ucsd.edu/"
 
         except Exception as e:
             print("exception")
             print(e)
             assert 0
             self.driver.quit()
+
+    def test_assignment_events_caliper_desktop(self):
+        try:
+            super().login_sso()
+
+            # click account
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "ic-app-header__main-navigation")
+                )
+            ).click()
+
+            # click courses
+            self.driver.find_element_by_link_text("Courses").click()
+
+            #
+            #
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.CLASS_NAME, "fOyUs_bGBk")
+                )
+            ).click()
+
+            # js only
+            super().wait_for_ajax()
+
+            # click on test course
+            self.driver.find_element_by_link_text(
+                "Canvas Caliper Events Testing"
+            ).click()
+
+            # wait for page to load
+            WebDriverWait(self.driver, self.SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located((By.ID, "footer"))
+            )
+
+            # click on assignments
+            self.driver.find_element_by_link_text("Assignments").click()
+
+            WebDriverWait(self.driver, self.SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.ID, "assignment_name")
+                )
+            )
+
+            # click on add assigmnent
+            self.driver.find_element_by_link_text("Add Assignment").click()
+
+            # wait for page to load
+
+            WebDriverWait(self.driver, self.SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located((By.ID, "footer"))
+            )
+
+            WebDriverWait(self.driver, self.SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.ID, "assignment_name")
+                )
+            )
+
+            self.driver.find_element(By.ID, "assignment_name").click()
+            self.driver.find_element(By.ID, "assignment_name").send_keys(
+                "Test Assignment 1"
+            )
+
+            # save assignment (EVENT: assignment_created)
+            self.driver.find_element_by_link_text("Save").click()
+
+            # WebDriverWait(self.driver, self.SECONDS_WAIT).until(
+            #    expected_conditions.element_to_be_clickable(
+            #        (By.ID, "assignment_points_possible").click()
+            #    )
+            # )
+
+            # self.driver.find_element(By.ID, "assignment_points_possible").click()
+            # self.driver.find_element(By.ID, "assignment_points_possible").send_keys("1")
+            # self.driver.find_element(By.ID, "assignment_points_possible").click()
+
+            # assignment override
+            self._assignment_override(3)
+
+            # assignment override updated
+            self._assignment_override(2)
+
+        except Exception as e:
+            print("exception")
+            print(e)
+            assert 0
+            self.driver.quit()
+
+    def __assignment_override(self, index_number):
+        try:
+
+            # click edit assignment
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.CLASS_NAME, "edit_assignment_link")
+                )
+            ).click()
+
+            # assignment override
+            # click 'x' in 'assign to'
+            self.driver.find_element(By.ID, "ic-token-delete-button").click()
+
+            # wait for div (not select-based) section list dropdown
+            super().wait_for_ajax()
+
+            # sections: course name is //*[@id="ic-tokeninput-list-1"]/div[3]
+            # everybody is [2]
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (
+                        By.XPATH,
+                        '//*[@id="ic-tokeninput-list-1"]/div[' + index_number + "]",
+                    )
+                )
+            ).click()
+
+            # save assignment (EVENT: assignment_updated, assignment_override_created)
+            self.driver.find_element_by_link_text("Save").click()
+
+        except Exception as e:
+            raise Exception

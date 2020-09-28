@@ -32,7 +32,7 @@ class BaseTest:
         WebDriverWait(self.driver, self.SECONDS_WAIT).until(
             expected_conditions.visibility_of_element_located((By.ID, "footer"))
         )
-        elements = self.driver.find_elements(By.ID, "dashboard_header_container")
+        elements = self.driver.find_elements(By.ID, "application")
         assert len(elements) > 0
 
     def wait_for_ajax(self, driver):
