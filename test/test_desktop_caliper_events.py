@@ -66,7 +66,8 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # click account
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
-                    (By.ID, "ic-app-header__main-navigation")
+                    (By.ID, "global_nav_profile_link")
+                    # (By.ID, "ic-app-header__main-navigation")
                 )
             ).click()
 
@@ -75,48 +76,75 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
             #
             #
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.CLASS_NAME, "fOyUs_bGBk")
-                )
-            ).click()
+            # WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+            #    expected_conditions.element_to_be_clickable(
+            #        (By.CLASS_NAME, "fOyUs_bGBk")
+            #    )
+            # ).click()
 
             # js only
-            super().wait_for_ajax()
+            # super().wait_for_ajax(self.driver)
+
+            # wait for test course div
+            xpath = "/html/body/div[3]/span/span/div/div/div/div/div/ul[1]/li[1]/a"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located((By.XPATH, xpath))
+            )
 
             # click on test course
             self.driver.find_element_by_link_text(
                 "Canvas Caliper Events Testing"
             ).click()
 
-            # wait for page to load
-            WebDriverWait(self.driver, self.SECONDS_WAIT).until(
-                expected_conditions.visibility_of_element_located((By.ID, "footer"))
+            # wait for page to load, click assignments in left navbar
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.CLASS_NAME, "assignments")
+                )
             )
 
+            # this fails inconsistently
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.CLASS_NAME, "assignments")
+                )
+            ).click()
+
             # click on assignments
-            self.driver.find_element_by_link_text("Assignments").click()
+            # self.driver.find_element_by_link_text("Assignments").click()
 
             WebDriverWait(self.driver, self.SECONDS_WAIT).until(
                 expected_conditions.visibility_of_element_located(
-                    (By.ID, "assignment_name")
+                    (By.CLASS_NAME, "assignment_group")
                 )
             )
 
             # click on add assigmnent
-            self.driver.find_element_by_link_text("Add Assignment").click()
+            xpath = '//*[@title="Add Assignment"]'
+            element = self.driver.find_element(By.XPATH, xpath)
+            self.move_to_element(element)
+
+            # WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+            #    expected_conditions.element_to_be_clickable(
+            #        (By.CLASS_NAME, "new_assignment")
+            #    )
+            # ).click()
 
             # wait for page to load
-
-            WebDriverWait(self.driver, self.SECONDS_WAIT).until(
-                expected_conditions.visibility_of_element_located((By.ID, "footer"))
-            )
-
-            WebDriverWait(self.driver, self.SECONDS_WAIT).until(
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.visibility_of_element_located(
-                    (By.ID, "assignment_name")
+                    (By.CLASS_NAME, "assignments")
                 )
             )
+
+            # WebDriverWait(self.driver, self.SECONDS_WAIT).until(
+            #    expected_conditions.visibility_of_element_located(
+            #        (By.ID, "assignment_name")
+            #    )
+            # )
+
+            element = self.driver.find_element(By.ID, "assignment_name")
+            self.move_to_element(element)
 
             self.driver.find_element(By.ID, "assignment_name").click()
             self.driver.find_element(By.ID, "assignment_name").send_keys(
