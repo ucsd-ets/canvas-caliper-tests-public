@@ -97,17 +97,18 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             ).click()
 
             # wait for page to load, click assignments in left navbar
+            xpath = "/html/body/div[2]/div[2]/div[2]/div[2]/nav/ul/li[5]/a"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.visibility_of_element_located(
-                    (By.CLASS_NAME, "assignments")
+                    # (By.CLASS_NAME, "assignments")
+                    (By.XPATH, xpath)
                 )
             )
 
             # this fails inconsistently
+            # TODO use xpath instead?
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.CLASS_NAME, "assignments")
-                )
+                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
             ).click()
 
             # click on assignments
@@ -120,36 +121,30 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             )
 
             # click on add assigmnent
-            xpath = '//*[@title="Add Assignment"]'
+            # xpath = '//*[@title="Add Assignment"]'
+            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[2]/div[2]/a"
             element = self.driver.find_element(By.XPATH, xpath)
             self.move_to_element(element)
+            # self.driver.find_element(By.XPATH, xpath).click()
 
-            # WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-            #    expected_conditions.element_to_be_clickable(
-            #        (By.CLASS_NAME, "new_assignment")
-            #    )
-            # ).click()
-
-            # wait for page to load
+            # wait for edit assignment form visible
+            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[1]/div/input"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.visibility_of_element_located(
-                    (By.CLASS_NAME, "assignments")
+                    # (By.ID, "edit_assignment_form")
+                    (By.XPATH, xpath)
                 )
             )
 
-            # WebDriverWait(self.driver, self.SECONDS_WAIT).until(
-            #    expected_conditions.visibility_of_element_located(
-            #        (By.ID, "assignment_name")
-            #    )
-            # )
-
-            element = self.driver.find_element(By.ID, "assignment_name")
+            # click in assignment name input field
+            # element = self.driver.find_element(By.ID, "assignment_name")
+            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[1]/div/input"
+            self.driver.find_element(By.XPATH, xpath)
             self.move_to_element(element)
 
-            self.driver.find_element(By.ID, "assignment_name").click()
-            self.driver.find_element(By.ID, "assignment_name").send_keys(
-                "Test Assignment 1"
-            )
+            # self.driver.find_element(By.ID, "assignment_name").click()
+            self.driver.find_element(By.XPATH, xpath).click()
+            self.driver.find_element(By.XPATH, xpath).send_keys("Test Assignment 1")
 
             # save assignment (EVENT: assignment_created)
             self.driver.find_element_by_link_text("Save").click()
