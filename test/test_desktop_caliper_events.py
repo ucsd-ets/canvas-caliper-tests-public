@@ -122,10 +122,13 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             )
 
             # click on add assigmnent
+            # can't get this to work ON SAFARI 11 - new paget not loading
+            # safari shows "your browser does not meet the minimum requirements
+            # for Canvas" message
             # scroll to right first
             # super().scroll_to_right()
             xpath = '//*[@title="Add Assignment"]'
-            #self.driver.find_element(By.XPATH, xpath).click()
+            # self.driver.find_element(By.XPATH, xpath).click()
 
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable((By.XPATH, xpath))
@@ -136,21 +139,20 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.visibility_of_element_located(
-                    # (By.ID, "assignment_name")
+                    #(By.ID, "assignment_name")
                     (By.XPATH, xpath)
                 )
             )
 
             # click in assignment name input field
-            # element = self.driver.find_element(By.ID, "assignment_name")
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[1]/div/input"
-            self.driver.find_element(By.XPATH, xpath)
-            super().move_to_element(element)
+            #element = self.driver.find_element(By.ID, "assignment_name")
+            #self.driver.find_element(By.XPATH, xpath)
+            # super().move_to_element(element)
 
-            # self.driver.find_element(By.ID, "assignment_name").click()
-            self.driver.find_element(By.XPATH, xpath).click()
+            self.driver.find_element(By.ID, "assignment_name").click()
+            #self.driver.find_element(By.XPATH, xpath).click()
             self.driver.find_element(
-                By.XPATH, xpath).send_keys("Test Assignment 1")
+                By.ID, "assignment_name").send_keys("Test Assignment 1")
 
             # save assignment (EVENT: assignment_created)
             self.driver.find_element_by_link_text("Save").click()

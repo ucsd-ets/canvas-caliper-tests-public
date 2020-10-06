@@ -50,7 +50,7 @@ def driver_init(request):
             # downgraded from "latest" and 10.15 on 2020-08-14 due to test_soa function error
             # selenium.common.exceptions.InvalidArgumentException: Message: Request body does not contain required parameter 'handle'.
             # see https://github.com/SeleniumHQ/selenium/issues/6431
-            desired_caps["version"] = "11"
+            desired_caps["version"] = "latest-1"
             desired_caps["platform"] = "Mac OS X 10.13"
         elif os.getenv("browser") == "firefox":
             desired_caps["browserName"] = "firefox"
@@ -172,7 +172,8 @@ def set_test_status(jobid, passed):
     base64string = str(
         base64.b64encode(
             bytes(
-                "%s:%s" % (os.getenv("SAUCE_USERNAME"), os.getenv("SAUCE_ACCESS_KEY")),
+                "%s:%s" % (os.getenv("SAUCE_USERNAME"),
+                           os.getenv("SAUCE_ACCESS_KEY")),
                 "utf-8",
             )
         )
