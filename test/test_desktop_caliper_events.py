@@ -13,7 +13,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class TestDesktopCaliperEvents(DesktopBaseTest):
-    def test_logged_in_event_caliper_desktop(self):
+    def test_canvas_logged_in_event_caliper_desktop(self):
         try:
             super().login_sso()
 
@@ -23,7 +23,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             assert 0
             self.driver.quit()
 
-    def test_logged_out_event_caliper_desktop(self):
+    def test_canvas_logged_out_event_caliper_desktop(self):
         try:
             super().login_sso()
 
@@ -37,12 +37,14 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # click logout
             xpath = "/html/body/div[3]/span/span/div/div/div/div/div/span/form/button"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.presence_of_element_located((By.XPATH, xpath))
+                expected_conditions.presence_of_element_located(
+                    (By.XPATH, xpath))
             )
             assert self.driver.find_element(By.XPATH, xpath).text == "Logout"
 
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.presence_of_element_located((By.XPATH, xpath))
+                expected_conditions.presence_of_element_located(
+                    (By.XPATH, xpath))
             ).click()
 
             # logout goes to ucsd.edu
@@ -59,7 +61,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             assert 0
             self.driver.quit()
 
-    def test_assignment_events_caliper_desktop(self):
+    def test_canvas_assignment_events_caliper_desktop(self):
         try:
             super().login_sso()
 
@@ -88,7 +90,8 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # wait for test course div
             xpath = "/html/body/div[3]/span/span/div/div/div/div/div/ul[1]/li[1]/a"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.visibility_of_element_located((By.XPATH, xpath))
+                expected_conditions.visibility_of_element_located(
+                    (By.XPATH, xpath))
             )
 
             # click on test course
@@ -105,8 +108,6 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                 )
             )
 
-            # this fails inconsistently
-            # TODO use xpath instead?
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable((By.XPATH, xpath))
             ).click()
@@ -121,17 +122,21 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             )
 
             # click on add assigmnent
-            # xpath = '//*[@title="Add Assignment"]'
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[2]/div[2]/a"
-            element = self.driver.find_element(By.XPATH, xpath)
-            self.move_to_element(element)
-            # self.driver.find_element(By.XPATH, xpath).click()
+            # scroll to right first
+            # super().scroll_to_right()
+            xpath = '//*[@title="Add Assignment"]'
+            #self.driver.find_element(By.XPATH, xpath).click()
 
-            # wait for edit assignment form visible
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
+            ).click()
+
+            # wait for assignment name input field visible
             xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[1]/div/input"
+
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.visibility_of_element_located(
-                    # (By.ID, "edit_assignment_form")
+                    # (By.ID, "assignment_name")
                     (By.XPATH, xpath)
                 )
             )
@@ -140,11 +145,12 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # element = self.driver.find_element(By.ID, "assignment_name")
             xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[1]/div/input"
             self.driver.find_element(By.XPATH, xpath)
-            self.move_to_element(element)
+            super().move_to_element(element)
 
             # self.driver.find_element(By.ID, "assignment_name").click()
             self.driver.find_element(By.XPATH, xpath).click()
-            self.driver.find_element(By.XPATH, xpath).send_keys("Test Assignment 1")
+            self.driver.find_element(
+                By.XPATH, xpath).send_keys("Test Assignment 1")
 
             # save assignment (EVENT: assignment_created)
             self.driver.find_element_by_link_text("Save").click()
