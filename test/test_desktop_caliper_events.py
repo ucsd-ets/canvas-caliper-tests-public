@@ -144,18 +144,28 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                 )
             )
 
-            # click in assignment name input field
-            #element = self.driver.find_element(By.ID, "assignment_name")
-            #self.driver.find_element(By.XPATH, xpath)
-            # super().move_to_element(element)
-
+            # click in assignment name input field, set assign name
             self.driver.find_element(By.ID, "assignment_name").click()
             #self.driver.find_element(By.XPATH, xpath).click()
             self.driver.find_element(
                 By.ID, "assignment_name").send_keys("Test Assignment 1")
+            # click "text entry" checkbox in "online entry options"
+            self.driver.find_element(By.ID, "assignment_text_entry").click()
 
             # save assignment (EVENT: assignment_created)
-            self.driver.find_element_by_link_text("Save").click()
+            super().scroll_to_bottom()
+            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[3]/div[2]/button[3]"
+            element = self.driver.find_element(By.XPATH, xpath)
+            super().move_to_element(element)
+
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
+            ).click()
+
+            # self.driver.find_element_by_link_text("Save").click()
+            # WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+            #    expected_conditions.element_to_be_clickable((By.XPATH, xpath))
+            # ).click()
 
             # WebDriverWait(self.driver, self.SECONDS_WAIT).until(
             #    expected_conditions.element_to_be_clickable(
@@ -167,11 +177,11 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # self.driver.find_element(By.ID, "assignment_points_possible").send_keys("1")
             # self.driver.find_element(By.ID, "assignment_points_possible").click()
 
-            # assignment override
-            self._assignment_override(3)
+            # assignment override - reload page
+            self.__assignment_override(3)
 
             # assignment override updated
-            self._assignment_override(2)
+            self.__assignment_override(2)
 
         except Exception as e:
             print("exception")
