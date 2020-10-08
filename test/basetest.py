@@ -16,7 +16,7 @@ class BaseTest:
     SECONDS_WAIT = 10
     BASE_URL = "https://canvas.ucsd.edu"
     WINDOW_WIDTH = 1000
-    WINDOW_HEIGHT = 1600
+    WINDOW_HEIGHT = 1200
 
     def login_sso(self):
         SSO_USERNAME = os.getenv("CANVAS_SSO_USERNAME")
