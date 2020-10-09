@@ -62,31 +62,17 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             self.driver.quit()
 
     def test_canvas_assignment_events_caliper_desktop(self):
+        ASSIGNMENT_NAME = "Test Assignment 1"
+
         try:
             super().login_sso()
 
-            # click account
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.ID, "global_nav_profile_link")
-                )
-            ).click()
+            # select test course
 
-            # click courses
-            self.driver.find_element_by_link_text("Courses").click()
+            # select test course
+            self.__select_caliper_events_test_course()
 
-            # wait for test course div
-            xpath = "/html/body/div[3]/span/span/div/div/div/div/div/ul[1]/li[1]/a"
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.visibility_of_element_located(
-                    (By.XPATH, xpath))
-            )
-
-            # click on test course
-            self.driver.find_element_by_link_text(
-                "Canvas Caliper Events Testing"
-            ).click()
-
+            # create an assignment
             # wait for page to load, click assignments in left navbar
             xpath = "/html/body/div[2]/div[2]/div[2]/div[2]/nav/ul/li[5]/a"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
@@ -107,9 +93,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             )
 
             # click on add assigmnent
-            # can't get this to work ON SAFARI 11 - new paget not loading
-            # safari shows "your browser does not meet the minimum requirements
-            # for Canvas" message
+            # note: safari 11 modal error "your browser does not meet the minimum requirements for Canvas" message
             xpath = '//*[@title="Add Assignment"]'
 
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
@@ -129,8 +113,9 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # click in assignment name input field, set assign name
             self.driver.find_element(By.ID, "assignment_name").click()
             # self.driver.find_element(By.XPATH, xpath).click()
-            self.driver.find_element(
-                By.ID, "assignment_name").send_keys("Test Assignment 1")
+            self.driver.find_element(By.ID, "assignment_name").send_keys(
+                ASSIGNMENT_NAME
+            )
 
             # click "text entry" checkbox in "online entry options"
             # self.driver.find_element(By.ID, "assignment_text_entry").click()
@@ -154,14 +139,14 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # assignment override updated - edit, modify assign groups, save
             self.__assignment_override(2)
 
-            # TODO delete assignment
-
+            # delete assignment
             # wait for page with edit assignment button to load, click it
             xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/div[1]/div[2]/a"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     # (By.CLASS_NAME, "edit_assigment_link"))
-                    (By.XPATH, xpath))
+                    (By.XPATH, xpath)
+                )
             ).click()
 
             # wait for page to load, check for an element unique to this page (dot menu is
@@ -178,8 +163,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # click dot menu
             xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/div/div[2]/div/button"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.XPATH, xpath))
+                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
                 # (By.CLASS_NAME, "icon-more"))
             ).click()
 
@@ -188,7 +172,123 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     # (By.CLASS_NAME, "delete_assigment_link"))
+                    (By.XPATH, xpath)
+                )
+            ).click()
+
+            # click yes on browser alert "sure you want to delete?"
+            # stays on page
+            # gives js error: Cannot read property 'bind' of undefined
+            alert_obj = self.driver.switch_to.alert
+            alert_obj.accept()
+
+            # confirm assignment no longer exists
+            # go to assignment list (since we're still hung from above)
+
+            # click assignments in left navbar
+            xpath = "/html/body/div[2]/div[2]/div[2]/div[2]/nav/ul/li[5]/a"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    # (By.CLASS_NAME, "assignments")
+                    (By.XPATH, xpath)
+                )
+            ).click()
+            # still appears in source even if not in page
+            # assert ASSIGNMENT_NAME not in self.driver.page_source
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.CLASS_NAME, "assignment_group")
+                    # (By.XPATH, xpath)
+                )
+            )
+            assignment_list = self.driver.find_element(
+                By.CLASS_NAME, "assignment-list")
+
+            for child in assignment_list.find_elements_by_xpath("./ul/li"):
+                print(child.text)
+                assert not (ASSIGNMENT_NAME in child.text)
+
+        except Exception as e:
+            print("exception")
+            print(e)
+            assert 0
+            self.driver.quit()
+
+    def test_assignment_not_exist(self):
+        ASSIGNMENT_NAME = "Test Assignment 1"
+
+        try:
+            super().login_sso()
+
+            # select test course
+
+            # select test course
+            self.__select_caliper_events_test_course()
+            # confirm assignment no longer exists
+            # go to assignment list (since we're still hung from above)
+
+            # click assignments in left navbar
+            xpath = "/html/body/div[2]/div[2]/div[2]/div[2]/nav/ul/li[5]/a"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    # (By.CLASS_NAME, "assignments")
+                    (By.XPATH, xpath)
+                )
+            ).click()
+            # still appears in source even if not in page
+            # assert ASSIGNMENT_NAME not in self.driver.page_source
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.CLASS_NAME, "assignment_group")
+                    # (By.XPATH, xpath)
+                )
+            )
+            assignment_list = self.driver.find_element(
+                By.CLASS_NAME, "assignment-list")
+
+            for child in assignment_list.find_elements_by_xpath("./ul/li"):
+                # for child in assignment_list.find_elements_by_xpath("./ul/li/div/div/a"):
+                # for child in assignment_list.find_elements_by_class_name("CollectionViewItems"):
+                print(child.text)
+                assert not (ASSIGNMENT_NAME in child.text)
+                # assert not ("Assignment" in child.text)
+
+        except Exception as e:
+            print("exception")
+            print(e)
+            assert 0
+            self.driver.quit()
+
+    def test_canvas_quiz_submitted_caliper_desktop(self):
+        WEEK_1_QUIZ_URL = (
+            "https://canvas.ucsd.edu/courses/20774/quizzes/34289/take?preview=1"
+        )
+
+        try:
+            super().login_sso()
+
+            # select test course
+            self.__select_caliper_events_test_course()
+
+            # submit a quiz
+            # wait for page to load, click quizzes in left navbar
+            xpath = "/html/body/div[2]/div[2]/div[2]/div[2]/nav/ul/li[6]/a"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
                     (By.XPATH, xpath))
+            )
+
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
+            ).click()
+
+            # go to week 1 quiz at https://canvas.ucsd.edu/courses/20774/quizzes/34289/take?preview=1
+            self.driver.get(self.WEEK_1_QUIZ_URL)
+
+            # wait for page to load, click q1 a1
+            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div/form[1]/div[1]/div[2]/div[2]/div[5]/div[3]/fieldset/div[1]/label/div"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
             ).click()
 
         except Exception as e:
@@ -197,15 +297,20 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             assert 0
             self.driver.quit()
 
+    # local methods
+
     def __assignment_override(self, index_number):
         try:
 
+            # override assignment
+            # edit assignment
             # wait for page with edit assignment button to load, click it
             xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/div[1]/div[2]/a"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     # (By.CLASS_NAME, "edit_assigment_link"))
-                    (By.XPATH, xpath))
+                    (By.XPATH, xpath)
+                )
             ).click()
 
             # wait for assign section to load
@@ -226,7 +331,8 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # click in the assign field
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
-                    (By.CLASS_NAME, "ic-tokeninput"))
+                    (By.CLASS_NAME, "ic-tokeninput")
+                )
             ).click()
 
             # wait for div (not select-based) section list dropdown
@@ -236,21 +342,24 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # everybody is [2]
             # /html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[6]/div[2]/div/div/div/div[1]/div[2]/ul/li/div/div/div[2]
             # /html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[6]/div[2]/div/div/div/div[1]/div[2]/ul/li/div/div/div[3]
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[6]/div[2]/div/div/div/div[1]/div[2]/ul/li/div/div/div[" + str(
-                index_number) + "]"
+            xpath = (
+                "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[6]/div[2]/div/div/div/div[1]/div[2]/ul/li/div/div/div["
+                + str(index_number)
+                + "]"
+            )
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (
-                        By.XPATH, xpath
+                        By.XPATH,
+                        xpath
                         # By.XPATH,'//*[@id="ic-tokeninput-list-1"]/div[' +
-                        #str(index_number) + ']',
+                        # str(index_number) + ']',
                     )
                 )
             ).click()
             super().wait_for_ajax(self.driver)
 
             # save assignment (EVENT: assignment_updated, assignment_override_created)
-
             super().scroll_to_bottom()
             xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[3]/div[2]/button[3]"
             element = self.driver.find_element(By.XPATH, xpath)
@@ -258,6 +367,34 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable((By.XPATH, xpath))
+            ).click()
+
+        except Exception as e:
+            raise Exception
+
+    def __select_caliper_events_test_course(self):
+        try:
+            # select the caliper events test course
+            # wait for and click account
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "global_nav_profile_link")
+                )
+            ).click()
+
+            # click courses
+            self.driver.find_element_by_link_text("Courses").click()
+
+            # wait for test course div
+            xpath = "/html/body/div[3]/span/span/div/div/div/div/div/ul[1]/li[1]/a"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.XPATH, xpath))
+            )
+
+            # click on test course
+            self.driver.find_element_by_link_text(
+                "Canvas Caliper Events Testing"
             ).click()
 
         except Exception as e:
