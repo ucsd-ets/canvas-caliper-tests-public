@@ -260,9 +260,9 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             self.driver.quit()
 
     def test_canvas_quiz_submitted_caliper_desktop(self):
-        WEEK_1_QUIZ_URL = (
-            "https://canvas.ucsd.edu/courses/20774/quizzes/34289/take?preview=1"
-        )
+        #WEEK_1_QUIZ_URL = "https://canvas.ucsd.edu/courses/20774/quizzes/34289/take?preview=1"
+        WEEK_3_QUIZ_URL = "https://canvas.ucsd.edu/courses/20774/quizzes/34286"
+        SUBMISSION_DETAILS = "Submission Details:"
 
         try:
             super().login_sso()
@@ -282,14 +282,34 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                 expected_conditions.element_to_be_clickable((By.XPATH, xpath))
             ).click()
 
-            # go to week 1 quiz at https://canvas.ucsd.edu/courses/20774/quizzes/34289/take?preview=1
-            self.driver.get(self.WEEK_1_QUIZ_URL)
+            # go to week 3 quiz that just has submit button
+            # note we are skipping "preview" button and going right to url
+            self.driver.get(WEEK_3_QUIZ_URL)
 
-            # wait for page to load, click q1 a1
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div/form[1]/div[1]/div[2]/div[2]/div[5]/div[3]/fieldset/div[1]/label/div"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "preview_quiz_button"))
             ).click()
+
+            # wait for week 1 quiz page to load, click q1 a1
+            #xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div/form[1]/div[1]/div[2]/div[2]/div[5]/div[3]/fieldset/div[1]/label/div"
+            # WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+            #    expected_conditions.element_to_be_clickable((By.XPATH, xpath))
+            # ).click()
+
+            # use quiz 3 that has just submit button; click submit quiz
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "submit_quiz_button")
+                )
+            ).click()
+
+            # wait for page to load; check for "Submission Details"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.presence_of_element_located(
+                    (By.ID, "quiz_details_wrapper"))
+            )
+            assert SUBMISSION_DETAILS in self.driver.page_source
 
         except Exception as e:
             print("exception")
