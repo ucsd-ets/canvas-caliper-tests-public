@@ -317,8 +317,45 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             assert 0
             self.driver.quit()
 
-    # local methods
+    def test_canvas_attachment_events_caliper_desktop(self):
+        try:
+            super().login_sso()
 
+            # select test course
+            self.__select_caliper_events_test_course()
+
+            #
+            # submit an attachment
+            #
+            # wait for page to load, click files in left navbar
+            xpath = "/html/body/div[2]/div[2]/div[2]/div[2]/nav/ul/li[19]/a"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.XPATH, xpath))
+            )
+
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
+            ).click()
+
+            # wait for page load; click upload button
+            xpath = "/html/body/div[2]/div[2]/div/div[3]/div[1]/div/div/header[2]/div/div[2]/button[2]/i"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.XPATH, "xpath"))
+            ).click()
+
+            # TODO: upload dialog handling
+
+        except Exception as e:
+            print("exception")
+            print(e)
+            assert 0
+            self.driver.quit()
+
+    #
+    # local methods
+    #
     def __assignment_override(self, index_number):
         try:
 
