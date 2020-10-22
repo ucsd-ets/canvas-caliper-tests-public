@@ -63,29 +63,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
     def test_canvas_assignment_events_caliper_desktop(self):
         try:
-            super().login_sso()
-
-            # click account
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.ID, "global_nav_profile_link")
-                )
-            ).click()
-
-            # click courses
-            self.driver.find_element_by_link_text("Courses").click()
-
-            # wait for test course div
-            xpath = "/html/body/div[3]/span/span/div/div/div/div/div/ul[1]/li[1]/a"
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.visibility_of_element_located(
-                    (By.XPATH, xpath))
-            )
-
-            # click on test course
-            self.driver.find_element_by_link_text(
-                "Canvas Caliper Events Testing"
-            ).click()
+            self.__access_test_events_course()
 
             # wait for page to load, click assignments in left navbar
             xpath = "/html/body/div[2]/div[2]/div[2]/div[2]/nav/ul/li[5]/a"
@@ -135,15 +113,16 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # click "text entry" checkbox in "online entry options"
             # self.driver.find_element(By.ID, "assignment_text_entry").click()
             element = self.driver.find_element(By.ID, "assignment_text_entry")
-            super().move_to_element(element)
+            #super().move_to_element(element)
             element.click()
 
             # save assignment (EVENT: assignment_created)
-            super().scroll_to_bottom()
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[3]/div[2]/button[3]"
-            element = self.driver.find_element(By.XPATH, xpath)
-            super().move_to_element(element)
+            #super().scroll_to_bottom()
+            #xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[3]/div[2]/button[3]"
+            #element = self.driver.find_element(By.XPATH, xpath)
+            #super().move_to_element(element)
 
+            xpath = "//button[@type='submit']"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable((By.XPATH, xpath))
             ).click()
@@ -196,6 +175,81 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             print(e)
             assert 0
             self.driver.quit()
+
+
+    def test_canvas_copy_course_event_caliper_desktop(self):
+        try:
+            self.__access_test_events_course()
+
+            # todo: delete copied course if it exists
+
+            # wait for page to load, click settings in left navbar
+            xpath = "//a[@href='/courses/20774/settings']"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.XPATH, xpath)
+                )
+            )
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
+            ).click()
+
+
+            #
+            # wait for page to load, click on copy course
+            #
+            WebDriverWait(self.driver, self.SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.ID, "course_public_description")
+                )
+            )
+            xpath = "//a[@href='/courses/20774/copy']"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
+            ).click()
+
+            # wait for form visible
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.ID, "course_enrollment_term_id")
+                )
+            )
+        # TODO: copy course, delete course
+           
+        except Exception as e:
+            print("exception")
+            print(e)
+            assert 0
+            self.driver.quit()
+
+    def __access_test_events_course(self):
+        try:
+            super().login_sso()
+
+            # click courses
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "global_nav_courses_link")
+                )
+            ).click()
+
+            # click courses
+            #self.driver.find_element_by_link_text("Courses").click()
+
+            # wait for test course div
+            xpath = "/html/body/div[3]/span/span/div/div/div/div/div/ul[1]/li[1]/a"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.XPATH, xpath))
+            )
+
+            # click on test course
+            self.driver.find_element_by_link_text(
+                "Canvas Caliper Events Testing"
+            ).click()
+
+        except Exception as e:
+            raise Exception            
 
     def __assignment_override(self, index_number):
         try:

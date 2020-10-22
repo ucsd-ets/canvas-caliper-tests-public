@@ -230,8 +230,6 @@ def pytest_configure(config):
 # uses -m arg to only run tests with desktop/mobile in function name based on given arg
 def pytest_collection_modifyitems(items):
     for item in items:
-        if "caliper" in item.nodeid:
-            item.add_marker(pytest.mark.caliper)
         if "desktop" in item.nodeid:
             item.add_marker(pytest.mark.desktop)
         if "mobile" in item.nodeid:
