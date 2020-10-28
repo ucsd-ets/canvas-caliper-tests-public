@@ -264,14 +264,21 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
             # wait for assign section to load
             # note that it loads, then iframe loads, pushing it down
+            # try moving to it again
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.presence_of_element_located(
                     (By.ID, "assign-to-label")
                 )
             )
+            super().wait_for_ajax(self.driver)
+            element = self.driver.find_element(
+                By.ID, "assign-to-label")
+            super().move_to_element(element)            
 
-            # assignment override
-            # click 'x' in 'assign to'
+            # assignment override - replace 'Everyone' with section 
+            # click 'x' for 'Everyone' in 'assign to' box 
+            # FAILING here (wasn't before): not seeing "everyone " selected after we save it previously
+            # TODO: check for it before attempting to delete?
             element = self.driver.find_element(
                 By.CLASS_NAME, "ic-token-delete-button")
             super().move_to_element(element)
