@@ -279,7 +279,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # wait for form visible
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.visibility_of_element_located(
-                    (By.ID, "course_enrollment_term_id") 
+                    (By.ID, "course_enrollment_term_id")
                 )
             )
 
@@ -302,6 +302,147 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             print(e)
             assert 0
             self.driver.quit()
+
+    # caliper events
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/enrollment_created.json
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/enrollment_updated.json
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/enrollment_state_created.json
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/enrollment_state_updated.json
+    def test_canvas_enrollment_event_caliper_desktop(self):
+        try:
+            super().login_sso()
+
+            self.__access_test_events_course()
+
+            # click people in course
+            # this is off screen, may need presence instead of visiblity
+            #self.driver.find_element(By.LINK_TEXT, "People").click()
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.LINK_TEXT, "People"))
+            ).click()
+
+            # wait for testacct1 to show
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.ID, "user_114217"))
+            )
+
+            # remove testacct222 if in course
+            if self.driver.find_elements_by_css_selector('#user_115752'):
+                print("testacct2 user exists, remove")
+                self.__remove_user_from_course()
+
+            #
+            # add testacct222 user to course
+            #
+
+            # 7 | click | id=addUsers |
+            #self.driver.find_element(By.ID, "addUsers").click()
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "addUsers"))
+            ).click()
+
+            # click in the add users text field
+            # does this id stay the same over time?
+            # 8 | click | id=ugxK2UObCuVx |
+            #self.driver.find_element(By.ID, "ugxK2UObCuVx").click()
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "ugxK2UObCuVx"))
+            ).click()
+
+            # enter email address
+            # 9 | type | id=ugxK2UObCuVx | testacct222@ucsd.edu
+            self.driver.find_element(By.ID, "ugxK2UObCuVx").send_keys(
+                "testacct222@ucsd.edu")
+
+            # click next
+            # 10 | click | id=addpeople_next |
+            self.driver.find_element(By.ID, "addpeople_next").click()
+
+            # click hamburger menu for user
+            # 12 | mouseOver | css=#user_115752 .icon-more |
+            element = self.driver.find_element(
+                By.CSS_SELECTOR, "#user_115752 .icon-more")
+            #actions = ActionChains(self.driver)
+            # actions.move_to_element(element).perform()
+            super().move_to_element(element)
+
+            # 13 | click | css=#user_115752 .icon-more |
+            # self.driver.find_element(By.CSS_SELECTOR, "#user_115752 .icon-more").click()
+            # 14 | mouseOut | css=#user_115752 .icon-more |
+            #element = self.driver.find_element(By.CSS_SELECTOR, "body")
+            #actions = ActionChains(self.driver)
+            #actions.move_to_element(element, 0, 0).perform()
+
+            # click "Edit Role" in dropdown
+            # TODO: change to descriptive id in case order changes?
+            # 15 | click | id=ui-id-6 |
+            #self.driver.find_element(By.ID, "ui-id-6").click()
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "ui-id-6"))
+            ).click()
+
+            # click role dropdown
+            # 16 | click | id=role_id |
+            # self.driver.find_element(By.ID, "role_id").click()
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "role_id"))
+            ).click()
+
+            # select Observer role
+            # 17 | select | id=role_id | label=Observer
+            dropdown = self.driver.find_element(By.ID, "role_id")
+
+            # TODO: wait for dropdown elements first?
+            dropdown.find_element(By.XPATH, "//option[. = 'Observer']").click()
+
+            # submit role change
+            # 18 | click | css=.btn-primary > .ui-button-text |
+            self.driver.find_element(
+                By.CSS_SELECTOR, ".btn-primary > .ui-button-text").click()
+
+            # still on people page
+            # remove user from course
+            self.__remove_user_from_course()
+
+        except Exception as e:
+            print("exception")
+            print(e)
+            assert 0
+            self.driver.quit()
+
+    def __remove_user_from_course(self):
+        try:
+
+            # click user hamburger menu
+            # 19 | click | css=#user_115752 .icon-more |
+            # self.driver.find_element(By.CSS_SELECTOR, "#user_115752 .icon-more").click()
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.CSS_SELECTOR, "#user_115752 .icon-more"))
+            ).click()
+
+            # click "delete user" in dropdown
+            # 21 | click | id=ui-id-18 |
+            #self.driver.find_element(By.ID, "ui-id-18").click()
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.CSS_SELECTOR, By.ID, "ui-id-18"))
+            ).click()
+
+            # 22 | assertConfirmation | Are you sure you want to remove this user? |
+            assert self.driver.switch_to.alert.text == "Are you sure you want to remove this user?"
+
+            # 23 | webdriverChooseOkOnVisibleConfirmation |  |
+            self.driver.switch_to.alert.accept()
+
+        except Exception as e:
+            raise Exception
 
     def __access_test_events_course(self):
         try:
