@@ -329,6 +329,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             )
 
             # remove testacct222 if in course
+            # TODO READD
             if self.driver.find_elements_by_css_selector('#user_115752'):
                 print("testacct2 user exists, remove")
                 self.__remove_user_from_course()
@@ -345,30 +346,45 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             ).click()
 
             # click in the add users text field
-            # does this id stay the same over time?
+            # does this id stay the same over time? no
             # 8 | click | id=ugxK2UObCuVx |
             #self.driver.find_element(By.ID, "ugxK2UObCuVx").click()
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.ID, "ugxK2UObCuVx"))
+                expected_conditions.visibility_of_element_located(
+                    (By.TAG_NAME, "textarea"))
             ).click()
 
             # enter email address
             # 9 | type | id=ugxK2UObCuVx | testacct222@ucsd.edu
-            self.driver.find_element(By.ID, "ugxK2UObCuVx").send_keys(
+            self.driver.find_element(By.TAG_NAME, "textarea").send_keys(
                 "testacct222@ucsd.edu")
 
             # click next
             # 10 | click | id=addpeople_next |
             self.driver.find_element(By.ID, "addpeople_next").click()
 
+            # wait for "start over" button to appear since page content basically the same
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "addpeople_back"))
+            )
+
+            # click "add users" - same id as previous dialog we submitted
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "addpeople_next"))
+            ).click()
+
             # click hamburger menu for user
             # 12 | mouseOver | css=#user_115752 .icon-more |
-            element = self.driver.find_element(
-                By.CSS_SELECTOR, "#user_115752 .icon-more")
-            #actions = ActionChains(self.driver)
-            # actions.move_to_element(element).perform()
-            super().move_to_element(element)
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.CSS_SELECTOR, "#user_115752 .icon-more"))
+            ).click()
+            #element = self.driver.find_element(
+            #    By.CSS_SELECTOR, "#user_115752 .icon-more")
+            #super().move_to_element(element)
+
 
             # 13 | click | css=#user_115752 .icon-more |
             # self.driver.find_element(By.CSS_SELECTOR, "#user_115752 .icon-more").click()
@@ -376,6 +392,8 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             #element = self.driver.find_element(By.CSS_SELECTOR, "body")
             #actions = ActionChains(self.driver)
             #actions.move_to_element(element, 0, 0).perform()
+
+            super().scroll_to_bottom()
 
             # click "Edit Role" in dropdown
             # TODO: change to descriptive id in case order changes?
@@ -426,6 +444,8 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                 expected_conditions.element_to_be_clickable(
                     (By.CSS_SELECTOR, "#user_115752 .icon-more"))
             ).click()
+
+            super().scroll_to_bottom()
 
             # click "delete user" in dropdown
             # 21 | click | id=ui-id-18 |
