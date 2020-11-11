@@ -499,10 +499,10 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # wait for testacct1 to show
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.visibility_of_element_located(
-                    (By.XPATH, "user_114217"))
+                    (By.ID, "user_114217"))
             )
 
-            # TODO delete group set if if exists
+            # delete group set if if exists
             elements = self.driver.find_elements_by_link_text(
                 'Group Cat 1')
             if not elements:
@@ -518,7 +518,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                 # click hamburger menu for group 1
                 WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                     expected_conditions.element_to_be_clickable(
-                        (By.XPATH, "//i[@class='icon-more']"))
+                        (By.XPATH, "(//i[@class='icon-more'])[2]"))
                 ).click()  
 
                 # click delete group 
@@ -526,8 +526,12 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                     expected_conditions.element_to_be_clickable(
                         (By.XPATH, "//a[contains(@class,'icon-trash delete-category')]"))
                 ).click() 
-            
-                self.__add_group()                  
+
+                assert self.driver.switch_to.alert.text == "Are you sure you want to remove this group set?"
+                self.driver.switch_to.alert.accept()
+        
+            # add group set
+            self.__add_group_set()                  
 
 
         except Exception as e:
@@ -614,9 +618,9 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
         except Exception:
             raise Exception
 
-    def _add_group(self):
+    def __add_group_set(self):
         try:
-
+ 
             # click "+ group set"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
