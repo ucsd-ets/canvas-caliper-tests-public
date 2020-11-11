@@ -482,14 +482,13 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
     # groups
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/group_category_created.json
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/group_created.json
-    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/group_membership_created.json
     def test_canvas_group_events_caliper_desktop(self):
         try:
             super().login_sso()
 
             self.__access_test_events_course()
 
- # click people in course
+            # click people in course
             # this is off screen, may need presence instead of visiblity
             #self.driver.find_element(By.LINK_TEXT, "People").click()
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
@@ -504,85 +503,77 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             )
 
             # TODO delete group set if if exists
+            elements = self.driver.find_elements_by_link_text(
+                'Group Cat 1')
+            if not elements:
+                print("No Group Cat 1 element found, skip delete")
+            else:
+                #group_cat_1_element = elements[0]
+                WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                    expected_conditions.element_to_be_clickable(
+                        (By.LINK_TEXT, "Group Cat 1"))
+                    ).click()
 
-            # click "+ group set"
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.XPATH, "#//a[@href='/courses/20774/groups#new']"))
-            ).click()
+                # //i[@class='icon-more']
+                # click hamburger menu for group 1
+                WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                    expected_conditions.element_to_be_clickable(
+                        (By.XPATH, "//i[@class='icon-more']"))
+                ).click()  
 
-            # click in "new category name" text field
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.ID, "new_category_name"))
-            ).click()
-
-            # enter "group cat 1" nane
-            self.driver.find_element(
-                By.ID, "new_category_name").send_keys("Group Cat 1")
-
-            # click first radio button
-            # //input[@name='split_groups']
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.XPATH, "//input[@name='split_groups']"))
-            ).click()            
-
-            # click up button on number of groups
-            # //input[@name='create_group_count']
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.XPATH, "//input[@name='create_group_count']"))
-            ).click()                        
-
-            # click save button
-            # creates new group category and new group in it
-            # newGroupSubmitButton
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.ID, "newGroupSubmitButton"))
-            ).click()                        
-
-            # //i[@class='icon-more']
-            # click hamburger menu for group 1
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.XPATH, "//i[@class='icon-more']"))
-            ).click()  
-
-            # click delete group 
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.XPATH, "ui-id-13"))
-            ).click() 
-
-            # 
-            # add students to group
-            # this requires them accepting invite email sent to user, which we can't do
-            # TODO; use api
+                # click delete group 
+                WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                    expected_conditions.element_to_be_clickable(
+                        (By.XPATH, "//a[contains(@class,'icon-trash delete-category')]"))
+                ).click() 
             
-            '''
-            # click hamburger menu for group cat 1
-            # //a[@class='al-trigger action-darkgray']//i[1]
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.XPATH, "//a[@class='al-trigger action-darkgray']//i[1]"))
-            ).click()                        
+                self.__add_group()                  
 
-            # click visit group homepage
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.XPATH, "ui-id-4"))
-            ).click() 
 
+        except Exception as e:
+            print("exception")
+            print(e)
+            assert 0
+            self.driver.quit()
+
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/group_membership_created.json
+    def test_canvas_group_membership_event_caliper_desktop(self):
+        try:
+            super().login_sso()
+
+            self.__access_test_events_course()
+
+            # delete membership if it exists
+            # drag user out of group
+
+            source_element = self.driver.find_element(By.CLASS_NAME,"group-user-name")
+            dest_element = self.driver.find_element(By.CLASS_NAME,"no-results")
+            ActionChains(self.driver).drag_and_drop(source_element, dest_element).perform()
+            
+             
             # Click People
             # people
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (By.CLASS_NAME, "people"))
-            ).click()             
-            '''
+            ).click()           
 
+            # 
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.CLASS_NAME, "search-query"))
+            )         
+
+            # 
+            # drag student into group
+            # we have manually added testacct222 to course already
+            
+            source_element = self.driver.find_element(By.CLASS_NAME,"group-user-name")
+            dest_element = self.driver.find_element(By.CLASS_NAME,"group-name")
+            ActionChains(self.driver).drag_and_drop(source_element, dest_element).perform()
+            
+             
+                        
         except Exception as e:
             print("exception")
             print(e)
@@ -620,9 +611,52 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # 23 | webdriverChooseOkOnVisibleConfirmation |  |
             self.driver.switch_to.alert.accept()
 
-        except Exception as e:
+        except Exception:
             raise Exception
 
+    def _add_group(self):
+        try:
+
+            # click "+ group set"
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.XPATH, "#//a[@href='/courses/20774/groups#new']"))
+            ).click()
+
+            # click in "new category name" text field
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "new_category_name"))
+            ).click()
+
+            # enter "group cat 1" nane
+            self.driver.find_element(
+                By.ID, "new_category_name").send_keys("Group Cat 1")
+
+            # click first radio button
+            # //input[@name='split_groups']
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.XPATH, "//input[@name='split_groups']"))
+            ).click()            
+
+            # click up button on number of groups
+            # //input[@name='create_group_count']
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.XPATH, "//input[@name='create_group_count']"))
+            ).click()                        
+
+            # click save button
+            # creates new group category and new group in it
+            # newGroupSubmitButton
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "newGroupSubmitButton"))
+            ).click()  
+
+        except Exception:
+            raise Exception    
    
     def __access_test_events_course(self):
         try:
@@ -649,7 +683,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                 "Canvas Caliper Events Testing"
             ).click()
 
-        except Exception as e:
+        except Exception:
             raise Exception
 
     def __assignment_override(self, index_number):
@@ -722,5 +756,5 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                 expected_conditions.element_to_be_clickable((By.XPATH, xpath))
             ).click()
 
-        except Exception as e:
+        except Exception:
             raise Exception
