@@ -2,5 +2,8 @@
     "python.linting.flake8Enabled": false,
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
-    "files.autoSave": "afterDelay"
+    "files.autoSave": "afterDelay",
+    "python.formatting.autopep8Path": "/Users/pjamason/projects/canvas-ui-tests-public/venv/bin/autopep8",
+    "editor.formatOnSave": true,
+    "python.venvPath": "venv"
 }

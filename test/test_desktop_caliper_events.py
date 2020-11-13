@@ -119,8 +119,8 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
             # save assignment (EVENT: assignment_created)
             # super().scroll_to_bottom()
-            #xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[3]/div[2]/button[3]"
-            #element = self.driver.find_element(By.XPATH, xpath)
+            # xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[3]/div[2]/button[3]"
+            # element = self.driver.find_element(By.XPATH, xpath)
             # super().move_to_element(element)
 
             xpath = "//button[@type='submit']"
@@ -194,7 +194,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             ).click()
             # check if any couress under unpublished
             # course xpath
-            #xpath = "/html/body/div[3]/span/span/div/div/div/div/div/ul[2]/li/a"
+            # xpath = "/html/body/div[3]/span/span/div/div/div/div/div/ul[2]/li/a"
 
             # get unpub list of courses if it exists
             unpublished_courses = self.driver.find_elements_by_link_text(
@@ -288,7 +288,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
             # use default values
             # click copy course button
-            #self.driver.find_element_by_xpath("//button[id ='value']").click()
+            # self.driver.find_element_by_xpath("//button[id ='value']").click()
             xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/form/div[8]/button"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable((By.XPATH, xpath))
@@ -314,7 +314,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
             # click people in course
             # this is off screen, may need presence instead of visiblity
-            #self.driver.find_element(By.LINK_TEXT, "People").click()
+            # self.driver.find_element(By.LINK_TEXT, "People").click()
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (By.LINK_TEXT, "People"))
@@ -336,7 +336,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             #
 
             # 7 | click | id=addUsers |
-            #self.driver.find_element(By.ID, "addUsers").click()
+            # self.driver.find_element(By.ID, "addUsers").click()
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (By.ID, "addUsers"))
@@ -345,7 +345,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # click in the add users text field
             # does this id stay the same over time? no
             # 8 | click | id=ugxK2UObCuVx |
-            #self.driver.find_element(By.ID, "ugxK2UObCuVx").click()
+            # self.driver.find_element(By.ID, "ugxK2UObCuVx").click()
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.visibility_of_element_located(
                     (By.TAG_NAME, "textarea"))
@@ -378,7 +378,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             # comment out remove user - keep them there for enrollment change test below
             # still on people page
             # remove user from course
-            #self.__remove_user_from_course()
+            # self.__remove_user_from_course()
 
         except Exception as e:
             print("exception")
@@ -386,10 +386,10 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             assert 0
             self.driver.quit()
 
-
     # enrollment_state: active, etc.  for a change event, set to deactivate
-    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/enrollment_state_created.json 
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/enrollment_state_created.json
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/enrollment_state_updated.json
+
     def test_canvas_enrollment_state_change_event_caliper_desktop(self):
         try:
             super().login_sso()
@@ -398,7 +398,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
             # click people in course nav menu
             # this is off screen, may need presence instead of visiblity
-            #self.driver.find_element(By.LINK_TEXT, "People").click()
+            # self.driver.find_element(By.LINK_TEXT, "People").click()
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (By.LINK_TEXT, "People"))
@@ -410,28 +410,26 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                     (By.ID, "user_114217"))
             )
 
-
             #
             # deactivate user
             #
-            
+
             # click hamburger menu for user
             # 12 | mouseOver | css=#user_115752 .icon-more |
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (By.CSS_SELECTOR, "#user_115752 .icon-more"))
             ).click()
-            #element = self.driver.find_element(
+            # element = self.driver.find_element(
             #    By.CSS_SELECTOR, "#user_115752 .icon-more")
-            #super().move_to_element(element)
-
+            # super().move_to_element(element)
 
             # 13 | click | css=#user_115752 .icon-more |
             # self.driver.find_element(By.CSS_SELECTOR, "#user_115752 .icon-more").click()
             # 14 | mouseOut | css=#user_115752 .icon-more |
-            #element = self.driver.find_element(By.CSS_SELECTOR, "body")
-            #actions = ActionChains(self.driver)
-            #actions.move_to_element(element, 0, 0).perform()
+            # element = self.driver.find_element(By.CSS_SELECTOR, "body")
+            # actions = ActionChains(self.driver)
+            # actions.move_to_element(element, 0, 0).perform()
 
             super().scroll_to_bottom()
 
@@ -477,9 +475,9 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             print("exception")
             print(e)
             assert 0
-            self.driver.quit()                
+            self.driver.quit()
 
-    # groups
+    # groups (referred to as categories in caliper docs, element ids)
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/group_category_created.json
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/group_created.json
     def test_canvas_group_events_caliper_desktop(self):
@@ -490,7 +488,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
             # click people in course
             # this is off screen, may need presence instead of visiblity
-            #self.driver.find_element(By.LINK_TEXT, "People").click()
+            # self.driver.find_element(By.LINK_TEXT, "People").click()
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (By.LINK_TEXT, "People"))
@@ -502,37 +500,88 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                     (By.ID, "user_114217"))
             )
 
+            #
             # delete group set if if exists
+            #
             elements = self.driver.find_elements_by_link_text(
-                'Group Cat 1')
+                'Group Set A')
             if not elements:
-                print("No Group Cat 1 element found, skip delete")
+                print("No Group Set A element found, skip delete")
             else:
-                #group_cat_1_element = elements[0]
+                # group_cat_1_element = elements[0]
                 WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                     expected_conditions.element_to_be_clickable(
-                        (By.LINK_TEXT, "Group Cat 1"))
-                    ).click()
+                        (By.LINK_TEXT, "Group Set A"))
+                ).click()
+                # super().wait_for_ajax(self.driver)
 
-                # //i[@class='icon-more']
-                # click hamburger menu for group 1
+                # click hamburger menu for group set A
+                # NOTE: group set A must be first group set listed
+                #
+                # (//i[@class='icon-more']
                 WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                     expected_conditions.element_to_be_clickable(
-                        (By.XPATH, "(//i[@class='icon-more'])[2]"))
-                ).click()  
+                        (By.XPATH, "(//a[@role='button']//i)[2]"))
+                ).click()
+                super().wait_for_ajax(self.driver)
 
-                # click delete group 
+                # click delete group set
+                # (//li[@class='ui-menu-item']//a)[3]
+                # div#group_categories_tabs>div:nth-of-type(3)>div>div>div>div>span>ul>li:nth-of-type(4)>a
+                # //a[contains(@class,'icon-trash delete-category')]
+                super().wait_for_ajax(self.driver)
                 WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                     expected_conditions.element_to_be_clickable(
-                        (By.XPATH, "//a[contains(@class,'icon-trash delete-category')]"))
-                ).click() 
+                        (By.CSS_SELECTOR, "div#group_categories_tabs>div:nth-of-type(3)>div>div>div>div>span>ul>li:nth-of-type(4)>a"))
+                ).click()
 
+                # click "Everyone" tab so we're back at base groups page
+                # super().wait_for_ajax(self.driver)
+                WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                    expected_conditions.element_to_be_clickable(
+                        (By.LINK_TEXT, "Everyone"))
+                ).click()
+
+                super().wait_for_ajax(self.driver)
                 assert self.driver.switch_to.alert.text == "Are you sure you want to remove this group set?"
                 self.driver.switch_to.alert.accept()
-        
-            # add group set
-            self.__add_group_set()                  
+                '''
+                # delete group - not needed
 
+                # click hamburger menu for group 1
+                # (//i[@class='icon-more'])[2]
+                # //a[@class='al-trigger action-darkgray']//i[1]
+                # //a[@id='group-37446-actions']/i[1]
+                WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                    expected_conditions.element_to_be_clickable(
+                        (By.XPATH, "//a[@id='group-37446-actions']/i[1]"))
+                ).click()
+
+                # By.LINK_TEXT, "Delete"
+                # (//li[@class='ui-menu-item']//a)[3]
+                # //a[contains(@class,'icon-trash delete-category')]
+                super().wait_for_ajax(self.driver)
+
+                WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                    expected_conditions.element_to_be_clickable(
+                        (By.XPATH, "(//li[@class='ui-menu-item']//a)[3]"))
+                ).click()
+
+                assert self.driver.switch_to.alert.text == "Are you sure you want to remove this group?"
+                self.driver.switch_to.alert.accept()
+                '''
+
+            # add group set and group
+            self.__add_group_set_and_group()
+
+            # assert "Group Set A" exists
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.LINK_TEXT, "Group Set A"))
+            ).click()
+            elements = self.driver.find_elements_by_link_text(
+                'Group Set A')
+            assert len(elements) == 1
 
         except Exception as e:
             print("exception")
@@ -547,47 +596,64 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
             self.__access_test_events_course()
 
-            # delete membership if it exists
-            # drag user out of group
+            # click people in course
+            # this is off screen, may need presence instead of visiblity
+            # self.driver.find_element(By.LINK_TEXT, "People").click()
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.LINK_TEXT, "People"))
+            ).click()
 
-            source_element = self.driver.find_element(By.CLASS_NAME,"group-user-name")
-            dest_element = self.driver.find_element(By.CLASS_NAME,"no-results")
-            ActionChains(self.driver).drag_and_drop(source_element, dest_element).perform()
-            
-             
+            # wait for testacct1 to show
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.visibility_of_element_located(
+                    (By.ID, "user_114217"))
+            )
+
+            # delete membership if it exists
+            # drag user out of group cat a
+
+            source_element = self.driver.find_element(
+                By.CLASS_NAME, "group-user-name")
+            dest_element = self.driver.find_element(
+                By.CLASS_NAME, "no-results")
+            ActionChains(self.driver).drag_and_drop(
+                source_element, dest_element).perform()
+
             # Click People
             # people
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (By.CLASS_NAME, "people"))
-            ).click()           
+            ).click()
 
-            # 
+            #
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (By.CLASS_NAME, "search-query"))
-            )         
+            )
 
-            # 
+            #
             # drag student into group
             # we have manually added testacct222 to course already
-            
-            source_element = self.driver.find_element(By.CLASS_NAME,"group-user-name")
-            dest_element = self.driver.find_element(By.CLASS_NAME,"group-name")
-            ActionChains(self.driver).drag_and_drop(source_element, dest_element).perform()
-            
-             
-                        
+
+            source_element = self.driver.find_element(
+                By.CLASS_NAME, "group-user-name")
+            dest_element = self.driver.find_element(
+                By.CLASS_NAME, "group-name")
+            ActionChains(self.driver).drag_and_drop(
+                source_element, dest_element).perform()
+
         except Exception as e:
             print("exception")
             print(e)
             assert 0
             self.driver.quit()
 
-
-    # 
+    #
     # private utility methods
     #
+
     def __remove_user_from_course(self):
         try:
 
@@ -603,7 +669,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
 
             # click "delete user" in dropdown; changed to 9 from 18
             # 21 | click | id=ui-id-18 |
-            #self.driver.find_element(By.ID, "ui-id-18").click()
+            # self.driver.find_element(By.ID, "ui-id-18").click()
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.visibility_of_element_located(
                     (By.ID, "ui-id-9"))
@@ -618,50 +684,89 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
         except Exception:
             raise Exception
 
-    def __add_group_set(self):
+    def __add_group_set_and_group(self):
         try:
- 
+
             # click "+ group set"
+            # (By.XPATH, "#//a[@href='/courses/20774/groups#new']"))
+            # //button[@id='add-group-set']
+            # (By.ID, "add-group-set"))
+            # //a[@href='/courses/20774/groups#new']
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
-                    (By.XPATH, "#//a[@href='/courses/20774/groups#new']"))
+                    (By.XPATH, "//a[@href='/courses/20774/groups#new']"))
             ).click()
 
-            # click in "new category name" text field
+            # click in "group set name" text field
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (By.ID, "new_category_name"))
             ).click()
 
-            # enter "group cat 1" nane
+            # enter "group set a" nane
             self.driver.find_element(
-                By.ID, "new_category_name").send_keys("Group Cat 1")
+                By.ID, "new_category_name").send_keys("Group Set A")
 
             # click first radio button
             # //input[@name='split_groups']
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (By.XPATH, "//input[@name='split_groups']"))
-            ).click()            
+            ).click()
 
             # click up button on number of groups
             # //input[@name='create_group_count']
+            # WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+            #    expected_conditions.element_to_be_clickable(
+            #        (By.NAME, "create_group_count"))
+            # ).click()
+
+            # self.driver.find_element(
+            #    By.NAME, "create_group_count").send_keys("1")
+
+            # click "i'll create groups later" - can't get create_group_count option to work
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
-                    (By.XPATH, "//input[@name='create_group_count']"))
-            ).click()                        
+                    (By.XPATH, "(//input[@type='radio'])[3]"))
+            ).click()
 
             # click save button
-            # creates new group category and new group in it
+            # creates new group set
             # newGroupSubmitButton
+            super().scroll_to_bottom()
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable(
                     (By.ID, "newGroupSubmitButton"))
-            ).click()  
+            ).click()
+
+            # create group in group set so we can drag students to it
+            super().wait_for_ajax(self.driver)
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.XPATH, "//button[@title='Add Group']"))
+            ).click()
+
+            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
+                expected_conditions.element_to_be_clickable(
+                    (By.ID, "group_name"))
+            ).click()
+
+            self.driver.find_element(
+                By.ID, "group_name").send_keys("Group 1")
+
+            self.driver.find_element(
+                By.ID, "group_max_membership").click()
+
+            self.driver.find_element(
+                By.ID, "group_max_membership").send_keys("1")
+
+            # (//button[@type='submit'])[2]
+            self.driver.find_element(
+                By.XPATH, "(//button[@type='submit'])[2]").click()
 
         except Exception:
-            raise Exception    
-   
+            raise Exception
+
     def __access_test_events_course(self):
         try:
 
@@ -743,7 +848,7 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
                     (
                         By.XPATH, xpath
                         # By.XPATH,'//*[@id="ic-tokeninput-list-1"]/div[' +
-                        #str(index_number) + ']',
+                        # str(index_number) + ']',
                     )
                 )
             ).click()

@@ -5,6 +5,8 @@ import os
 # to introspect the “requesting” test function, class, module or session, depending on the scope.
 # set scope to function so pytest_runtest_makereport() gets called on function calls
 # and we can test the output there
+
+
 @pytest.fixture(scope="function")
 def driver_init(request):
     import os
@@ -25,7 +27,7 @@ def driver_init(request):
 
     desired_caps["videoUploadOnPass"] = "true"
     desired_caps["name"] = request.node.name
-    desired_caps["commandTimeout"] = 30
+    desired_caps["commandTimeout"] = 15
     desired_caps["idleTimeout"] = 15
     desired_caps["recordVideo"] = "true"
 
