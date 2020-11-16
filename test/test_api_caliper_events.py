@@ -23,27 +23,24 @@ class TestCaliperGeneration():
         self.API_KEY = os.getenv("CANVAS_API_KEY")
         # Initialize a new Canvas object
         self.canvas = Canvas(self.API_URL, self.API_KEY)
+        self.course = self.canvas.get_course(20774)
         yield
         self.canvas = False
 
-    @pytest.fixture(autouse=True)
-    def myfixture(self, prepare_canvas):
-        print(self.canvas)
+    # group category created
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/group_category_created.json
+    def test_create_group_category(self, prepare_canvas):
+        self.group_category = self.course.create_group_category(
+            "Cat From API")
+        response = self.group_category.delete()
+        print(response)
 
-        self.course = self.canvas.get_course(20774)
-        self.group_category = self.course.create_group_category("Test String")
-        self.progress = self.group_category.assign_members()
-
-    def test_add_category(self, prepare_canvas):
-
-        self.course = self.canvas.get_course(20774)
-        print("course name: " + self.course.name)
-        # get "test assignment 1"
-        self.assignment = self.course.get_assignment(219410)
-
-        # see https://github.com/ucfopen/canvasapi/blob/develop/tests/test_assignment.py
-        # 115753: testacct3
-        user_id = 115753
+    def test_create_group(self, prepare_canvas):
+        self.group_category = self.course.create_group_category(
+            "Cat From API")
+        self.group_category.create_group()
+        response = self.group_category.delete()
+        print(response)
 
     def test_submit(self, prepare_canvas):
 
@@ -55,6 +52,8 @@ class TestCaliperGeneration():
         #self.assertTrue(hasattr(submission, "submission_type"))
         #self.assertEqual(submission.submission_type, sub_type)
 
+    # NOT WORKING: could not get submission to appear
+    # TODO: api call to SAH to confirm generation
     def test_submit_file(self, prepare_canvas):
 
         # print(sys.path)
@@ -83,5 +82,6 @@ class TestCaliperGeneration():
             print(response[0])
             print(response[1])
             print("test")
+
         except Exception:
             raise Exception
