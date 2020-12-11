@@ -11,6 +11,7 @@ from canvasapi.assignment import (
     AssignmentOverride,
     AssignmentExtension,
 )
+from canvasapi.group import Group, GroupCategory, GroupMembership
 
 
 class TestCaliperGeneration():
@@ -22,6 +23,8 @@ class TestCaliperGeneration():
         self.API_URL = "https://canvas.ucsd.edu"
         # Canvas API key
         self.API_KEY = os.getenv("CANVAS_API_KEY")
+        # 115753: testacct3
+        self.USER_ID = 115753
         # Initialize a new Canvas object
         self.canvas = Canvas(self.API_URL, self.API_KEY)
         self.requester = self.canvas._Canvas__requester
@@ -30,19 +33,26 @@ class TestCaliperGeneration():
         yield
         self.canvas = False
 
-    # group category created
+    # group category, group, membership created
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/group_category_created.json
-    def test_create_group_category(self, prepare_canvas):
-        self.group_category = self.course.create_group_category(
-            "Cat From API")
-        response = self.group_category.delete()
-        print(response)
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/group_membership_created.json
 
-    # group created
-    def test_create_group(self, prepare_canvas):
+    def test_create_group_membership(self, prepare_canvas):
         self.group_category = self.course.create_group_category(
-            "Cat From API")
-        self.group_category.create_group()
+            "Cat From API 3")
+        print(self.group_category)
+        group_name = "Group 1"
+        self.group = self.group_category.create_group(name=group_name)
+        print(self.group)
+        response = self.group.create_membership(self.USER_ID)
+        print(response)
+        # confirm return object is of type GroupMembership
+        assert isinstance(response, GroupMembership)
+
+        # note: https://github.com/ucfopen/canvasapi/blob/develop/tests/test_group.py
+        # test_get_membership also checks that creating membership via user object (instead of id)
+        # returns GM instance type
+
         response = self.group_category.delete()
         print(response)
 
@@ -73,18 +83,18 @@ class TestCaliperGeneration():
         # close file(s)
         self.file.close()
 
-    def test_enrollment_created(self, prepare_canvas)
-    # create file
-    self.file = open(self.filename, "w+")
-    uploader = Uploader(self.requester, "upload_response", self.file)
-    result = uploader.start()
+    def test_enrollment_created(self, prepare_canvas):
+        # create file
+        self.file = open(self.filename, "w+")
+        uploader = Uploader(self.requester, "upload_response", self.file)
+        result = uploader.start()
 
-    assert(result[0])
-    assert isinstance(result[1], dict)
-    assert "url" in result[1]
+        assert(result[0])
+        assert isinstance(result[1], dict)
+        assert "url" in result[1]
 
-    # close file(s)
-    self.file.close()
+        # close file(s)
+        self.file.close()
 
     # attachment (file) downloaded
     # NOT AN EVENT
@@ -127,12 +137,12 @@ class TestCaliperGeneration():
         self.assignment = self.course.get_assignment(219410)
 
         # see https://github.com/ucfopen/canvasapi/blob/develop/tests/test_assignment.py
-        # 115753: testacct3
-        user_id = 115753
+
         filename = "tmp2.png"
         try:
             with open(filename, "w+") as file:
-                response = self.assignment.upload_to_submission(file, user_id)
+                response = self.assignment.upload_to_submission(
+                    file, self.USER_ID)
 
             # self.assertTrue(response[0])
             assert response[0] is True
