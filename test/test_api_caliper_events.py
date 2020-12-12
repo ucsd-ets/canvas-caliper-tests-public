@@ -4,6 +4,7 @@ import canvasapi
 import pytest
 # Import the Canvas class
 from canvasapi import Canvas
+from canvasapi.submission import GroupedSubmission, Submission
 from canvasapi.upload import Uploader
 from canvasapi.assignment import (
     Assignment,
@@ -25,10 +26,16 @@ class TestCaliperGeneration():
         self.API_KEY = os.getenv("CANVAS_API_KEY")
         # 115753: testacct3
         self.USER_ID = 115753
+        # test caliper events course
+        # TODO: copy same course with testacct2 as owner so
+        # pjamason can submit to it? pjamason can't submit to own course
+        self.COURSE_ID = 20774
+        self.ASSIGNMENT_ID = 192792
         # Initialize a new Canvas object
         self.canvas = Canvas(self.API_URL, self.API_KEY)
         self.requester = self.canvas._Canvas__requester
-        self.course = self.canvas.get_course(20774)
+        self.course = self.canvas.get_course(self.COURSE_ID)
+        self.assignment = self.course.get_assignment(self.ASSIGNMENT_ID)
 
         yield
         self.canvas = False
@@ -56,33 +63,6 @@ class TestCaliperGeneration():
         response = self.group_category.delete()
         print(response)
 
-    # TODO: attachment (file) created
-    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/attachment_created.json
-    # def test_upload_file(self, prepare_canvas):
-
-    # TODO: attachment (file) created
-    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/attachment_deleted.json
-    # def test_delete_file
-
-    # file updated
-    # attachment (file) created
-    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/attachment_updated.json
-    # NOT WORKING: cant requeset token in Uploader
-    def test_update_file(self, prepare_canvas):
-
-        self.filename = "test_upload.txt"
-        # create file
-        self.file = open(self.filename, "w+")
-        uploader = Uploader(self.requester, "upload_response", self.file)
-        result = uploader.start()
-
-        assert(result[0])
-        assert isinstance(result[1], dict)
-        assert "url" in result[1]
-
-        # close file(s)
-        self.file.close()
-
     def test_enrollment_created(self, prepare_canvas):
         # create file
         self.file = open(self.filename, "w+")
@@ -96,31 +76,23 @@ class TestCaliperGeneration():
         # close file(s)
         self.file.close()
 
-    # attachment (file) downloaded
-    # NOT AN EVENT
-
-    def test_download_file(self, prepare_canvas):
-
-        self.file = self.course.get_files()[0]
-        try:
-            self.file.download("canvasapi_file_download_test.txt")
-            assert os.path.exists("canvasapi_file_download_test.txt")
-            # with open("canvasapi_file_download_test.txt") as downloaded_file:
-            #    self.assertEqual(downloaded_file.read(), '"file contents are here"')
-        finally:
-            try:
-                os.remove("canvasapi_file_download_test.txt")
-            except OSError:
-                pass
-
     # submission created
+    # UNDER DEV
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/submission_created.json
-    # TODO
+    # see test_submit() in assignment https://github.com/ucfopen/canvasapi/blob/develop/tests/test_assignment.py
+
     def test_submit(self, prepare_canvas):
 
         sub_type = "online_upload"
         sub_dict = {"submission_type": sub_type}
+
+        # TODO: copy same course with testacct2 as owner so
+        # pjamason can submit to it? pjamason can't submit to own course
         submission = self.assignment.submit(sub_dict)
+
+        # assert(result[0])
+        assert isinstance(submission, Submission)
+        assert submission.submission_type == sub_type
 
         #self.assertIsInstance(submission, Submission)
         #self.assertTrue(hasattr(submission, "submission_type"))
@@ -159,3 +131,48 @@ class TestCaliperGeneration():
 
         except Exception:
             raise Exception
+
+    # TODO: attachment (file) created
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/attachment_created.json
+    # def test_upload_file(self, prepare_canvas):
+
+    # TODO: attachment (file) created
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/attachment_deleted.json
+    # def test_delete_file
+
+    # file updated
+    # attachment (file) created
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/attachment_updated.json
+    # NOT WORKING: cant requeset token in Uploader
+
+    def test_update_file(self, prepare_canvas):
+
+        self.filename = "test_upload.txt"
+        # create file
+        self.file = open(self.filename, "w+")
+        uploader = Uploader(self.requester, "upload_response", self.file)
+        result = uploader.start()
+
+        assert(result[0])
+        assert isinstance(result[1], dict)
+        assert "url" in result[1]
+
+        # close file(s)
+        self.file.close()
+
+    # attachment (file) downloaded
+    # NOT A CALIPER EVENT
+
+    def test_download_file(self, prepare_canvas):
+
+        self.file = self.course.get_files()[0]
+        try:
+            self.file.download("canvasapi_file_download_test.txt")
+            assert os.path.exists("canvasapi_file_download_test.txt")
+            # with open("canvasapi_file_download_test.txt") as downloaded_file:
+            #    self.assertEqual(downloaded_file.read(), '"file contents are here"')
+        finally:
+            try:
+                os.remove("canvasapi_file_download_test.txt")
+            except OSError:
+                pass
