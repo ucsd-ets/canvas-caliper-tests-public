@@ -108,23 +108,26 @@ class TestCaliperGeneration():
 
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/wiki_page_created.json
     def test_create_wiki_page(self, prepare_canvas):
-        try:
-            # appears to overwrite so no pre-deletion needed
-            title = "Newest Page"
-            new_page = self.course.create_page(wiki_page={"title": title})
+        # appears to overwrite so no pre-deletion needed
+        title = "Newest Page"
+        new_page = self.course.create_page(wiki_page={"title": title})
 
-            assert isinstance(new_page, Page)
-            assert new_page.title == title
-        except Exception:
-            raise Exception
+        assert isinstance(new_page, Page)
+        assert new_page.title == title
 
     # delete wiki page
     # see https://github.com/ucfopen/canvasapi/blob/cff8028a1f87767f504fcbb4ddeebcd36d68707f/tests/test_page.py
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/wiki_page_deleted.json
 
+    def test_delete_wiki_page(self, prepare_canvas):
+        url = "newest-page"
+        self.page_course = self.course.get_page(url)
+        page = self.page_course
+        deleted_page = page.delete()
+        assert isinstance(deleted_page, Page)
+
+    # update wiki page - no ucf method; from UI only?  use a different page than above
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/wiki_page_updated.json
-
-
 
     # TODO: attachment (file) created
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/attachment_created.json
