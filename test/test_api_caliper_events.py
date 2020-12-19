@@ -30,17 +30,12 @@ class TestCaliperGeneration():
         # only used in test_submit_file - TODO confirm required
         self.USER_ID = 115753
         # test caliper events course (pjamason and testacct1 teachers)
-        # pjamason can't submit to own course
-        # self.COURSE_ID = 20774
-        # self.ASSIGNMENT_ID = 192792
-        # caliper events test 2 course (testacct1 teacher)
-        self.COURSE_ID = 24284
-        self.ASSIGNMENT_ID = 241934
+        self.COURSE_ID = 20774
+        self.ASSIGNMENT_ID = 192792
         # Initialize a new Canvas object
         self.canvas = Canvas(self.API_URL, self.API_KEY)
         self.requester = self.canvas._Canvas__requester
         self.course = self.canvas.get_course(self.COURSE_ID)
-        #self.assignment = self.course.get_assignment(self.ASSIGNMENT_ID)
 
         yield
         self.canvas = False
@@ -87,10 +82,15 @@ class TestCaliperGeneration():
 
     def test_submit_file(self, prepare_canvas):
 
-        # getting error here
-        # endpoint = 'courses/24284/assignments/219410'
-        # but assignment is 241934 above.  set it here
-        self.assignment = self.course.get_assignment(241934)
+        # pjamason can't submit to own course
+        # caliper events test 2 course (testacct1 teacher)
+        self.COURSE_ID = 24284
+        self.ASSIGNMENT_ID = 241934
+
+        self.canvas = Canvas(self.API_URL, self.API_KEY)
+        self.requester = self.canvas._Canvas__requester
+        self.course = self.canvas.get_course(self.COURSE_ID)
+        self.assignment = self.course.get_assignment(self.ASSIGNMENT_ID)
 
         filename = "tmp2.png"
         try:
@@ -106,11 +106,10 @@ class TestCaliperGeneration():
         except Exception:
             raise Exception
 
-    # IN PROGRESS
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/wiki_page_created.json
     def test_create_wiki_page(self, prepare_canvas):
         try:
-            # TODO DELETE PAGE before creating if it exists
+            # appears to overwrite so no pre-deletion needed
             title = "Newest Page"
             new_page = self.course.create_page(wiki_page={"title": title})
 
@@ -118,6 +117,14 @@ class TestCaliperGeneration():
             assert new_page.title == title
         except Exception:
             raise Exception
+
+    # delete wiki page
+    # see https://github.com/ucfopen/canvasapi/blob/cff8028a1f87767f504fcbb4ddeebcd36d68707f/tests/test_page.py
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/wiki_page_deleted.json
+
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/wiki_page_updated.json
+
+
 
     # TODO: attachment (file) created
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/attachment_created.json
