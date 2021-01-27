@@ -9,6 +9,7 @@ from canvasapi.submission import GroupedSubmission, Submission
 from canvasapi.upload import Uploader
 from canvasapi.requester import Requester
 from canvasapi.util import combine_kwargs, is_multivalued, obj_or_id
+from canvasapi.user import User
 
 from canvasapi.assignment import (
     Assignment,
@@ -37,16 +38,23 @@ class TestCaliperGeneration():
         #base_url = get_institution_url(base_url)
 
         self._requester = Requester(self.API_URL, self.API_KEY)
+        # production account
+        self.UCSD_PROD_ACCOUNT = 1
+
         # 115753: testacct3
         # only used in test_submit_file - TODO confirm required
         self.USER_ID = 115753
         # test caliper events course (pjamason and testacct1 teachers)
         self.COURSE_ID = 20774
         self.ASSIGNMENT_ID = 192792
+
         # Initialize a new Canvas object
         self.canvas = Canvas(self.API_URL, self.API_KEY)
+
         self.requester = self.canvas._Canvas__requester
         self.course = self.canvas.get_course(self.COURSE_ID)
+        self.account = self.canvas.get_account(self.UCSD_PROD_ACCOUNT)
+
 
         # TODO add a cleanup here so we don't have to test for/delete pages
 
@@ -164,6 +172,17 @@ class TestCaliperGeneration():
         #deleted_page = page.delete()
         deleted_page = self.__delete_wiki_page()
         assert isinstance(deleted_page, Page)
+
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/user_account_association_created.json
+    # to do; how to set "deleted" to 1 for this user; how to ensure we don't set an actual user to deleted
+    # if they are assigned that unique id 
+    def test_create_user(self, prepare_canvas):
+        unique_id = "testacct444"
+        user = self.account.create_user({"unique_id": unique_id})
+
+        assert isinstance(user, User)
+        assert hasattr(user, "unique_id")
+        assert user.unique_id == unique_id
 
 
     # TODO: attachment (file) created
