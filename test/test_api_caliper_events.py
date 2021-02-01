@@ -47,6 +47,7 @@ class TestCaliperGeneration():
         # test caliper events course (pjamason and testacct1 teachers)
         self.COURSE_ID = 20774
         self.ASSIGNMENT_ID = 192792
+        self.TESTACCT444_NUMERIC_ID = 122382
 
         # Initialize a new Canvas object
         self.canvas = Canvas(self.API_URL, self.API_KEY)
@@ -54,7 +55,6 @@ class TestCaliperGeneration():
         self.requester = self.canvas._Canvas__requester
         self.course = self.canvas.get_course(self.COURSE_ID)
         self.account = self.canvas.get_account(self.UCSD_PROD_ACCOUNT)
-
 
         # TODO add a cleanup here so we don't have to test for/delete pages
 
@@ -133,7 +133,7 @@ class TestCaliperGeneration():
     # update wiki page - no ucf method; from UI only?  use a different page than above
     # https://community.canvaslms.com/t5/Question-Forum/Update-Wiki-Page-HTML-via-API/td-p/67550
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/wiki_page_updated.json
-    def test_create_update_wiki_page(self, prepare_canvas):        
+    def test_create_update_wiki_page(self, prepare_canvas):
         # delete if it exists, otherwise will create "Newest Page-2"
         url = "newest-page"
         self.page_course = None
@@ -143,7 +143,7 @@ class TestCaliperGeneration():
             if (self.page_course and isinstance(self.page_course, Page)):
                 deleted_page = self.__delete_wiki_page()
                 assert isinstance(deleted_page, Page)
-        
+
         title = "Newest Page"
         new_page = self.course.create_page(wiki_page={"title": title})
 
@@ -155,7 +155,7 @@ class TestCaliperGeneration():
         # https://github.com/ucfopen/canvasapi/blob/master/canvasapi/course.py
         # https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.create
         # use a local version of this that uses .update
-        # 
+        #
         #updated_page = self.__update_wiki_page_body(new_page,wiki_page={"body": "<h1>new wiki body</h1>"})
         updated_page = self.__update_wiki_page_body(new_page)
 
@@ -175,15 +175,23 @@ class TestCaliperGeneration():
 
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/user_account_association_created.json
     # to do; how to set "deleted" to 1 for this user; how to ensure we don't set an actual user to deleted
-    # if they are assigned that unique id 
+    # if they are assigned that unique id
     def test_create_user(self, prepare_canvas):
+        self.user = self.canvas.get_user(self.TESTACCT444_NUMERIC_ID)
+        if (isinstance(self.user, User)):
+            # delete user
+            deleted_user = self.account.delete_user(self.user)
+            assert isinstance(deleted_user, User)
+            print(User)
+            assert hasattr(deleted_user, "name")
+
         unique_id = "testacct444"
         user = self.account.create_user({"unique_id": unique_id})
 
         assert isinstance(user, User)
+        print(User)
         assert hasattr(user, "unique_id")
         assert user.unique_id == unique_id
-
 
     # TODO: attachment (file) created
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/attachment_created.json
@@ -230,13 +238,6 @@ class TestCaliperGeneration():
             except OSError:
                 pass
 
-    def __create_wiki_page(self):
-        
-        title = "Newest Page"
-        new_page = self.course.create_page(wiki_page={"title": title})
-        return new_page
-
-
     def __delete_wiki_page(self):
 
         page = self.page_course
@@ -244,7 +245,7 @@ class TestCaliperGeneration():
         return deleted_page
 
     def __update_wiki_page_body(self, wiki_page, **kwargs):
-        #def create_page(self, wiki_page, **kwargs):
+        # def create_page(self, wiki_page, **kwargs):
         """
         update a wiki page.
         :calls: `POST /api/v1/courses/:course_id/pages \
@@ -255,16 +256,17 @@ class TestCaliperGeneration():
         :rtype: :class:`canvasapi.page.Page`
         """
 
-        print (wiki_page.title)
-        #if isinstance(wiki_page, dict) and "title" in wiki_page:
+        print(wiki_page.title)
+        # if isinstance(wiki_page, dict) and "title" in wiki_page:
         if isinstance(wiki_page, Page) and hasattr(wiki_page, 'title'):
             wiki_page_dict = vars(wiki_page)
-            wiki_page_dict["body"]="<h1>new wiki body</h1>"
+            wiki_page_dict["body"] = "<h1>new wiki body</h1>"
             kwargs["wiki_page"] = wiki_page_dict
-            print (kwargs)           
+            print(kwargs)
         else:
             #raise RequiredFieldMissing("Dictionary with key 'title' is required.")
-            raise RequiredFieldMissing("Object of type Page with attribute 'title' is required.")
+            raise RequiredFieldMissing(
+                "Object of type Page with attribute 'title' is required.")
 
         response = self._requester.request(
             "POST", "courses/{}/pages".format(self.COURSE_ID), _kwargs=combine_kwargs(**kwargs)
