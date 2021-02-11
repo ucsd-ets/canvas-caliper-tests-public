@@ -10,6 +10,7 @@ from canvasapi.upload import Uploader
 from canvasapi.requester import Requester
 from canvasapi.util import combine_kwargs, is_multivalued, obj_or_id
 from canvasapi.user import User
+from canvasapi.discussion_topic import DiscussionTopic
 
 from canvasapi.assignment import (
     Assignment,
@@ -174,34 +175,34 @@ class TestCaliperGeneration():
         assert isinstance(deleted_page, Page)
 
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/user_account_association_created.json
-    # to do; how to set "deleted" to 1 for this user; how to ensure we don't set an actual user to deleted
     # if they are assigned that unique id
     def test_create_and_delete_user(self, prepare_canvas):
-        #self.user = self.canvas.get_user(self.TESTACCT444_NUMERIC_ID)
-        # if (isinstance(self.user, User)):
-        #    # delete user
-        #    deleted_user = self.account.delete_user(self.user)
-        #    assert isinstance(deleted_user, User)
-        #    print(User)
-        #    assert hasattr(deleted_user, "name")
-
         unique_id = "testacct444"
         created_user = self.account.create_user({"unique_id": unique_id})
 
         assert isinstance(created_user, User)
-        print(created_user)
-        #assert hasattr(created_user, "login_id")
+        # print(created_user)
         assert created_user.login_id == unique_id
 
         deleted_user = self.account.delete_user(created_user)
         assert isinstance(deleted_user, User)
-        # print(deleted_user)
-        #assert hasattr(deleted_user, "login_id")
-        #assert deleted_user.login_id == unique_id
 
-    #
-    #
-    #
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/discussion_topic_created.json
+    # if they are assigned that unique id
+    def test_create_and_delete_discussion_topic(self, prepare_canvas):
+
+        title_str = "Test Topic 2"
+        discussion = self.course.create_discussion_topic(
+            # topic={"title": title})
+            title=title_str)
+
+        print(discussion)
+        assert isinstance(discussion, DiscussionTopic)
+        assert (hasattr(discussion, "course_id"))
+        assert title_str == discussion.title
+
+        response = discussion.delete()
+        #assert response == True
 
     # TODO: attachment (file) created
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/attachment_created.json
