@@ -18,6 +18,17 @@ from canvasapi.assignment import (
     AssignmentOverride,
     AssignmentExtension,
 )
+from canvasapi.quiz import (
+    Quiz,
+    QuizAssignmentOverrideSet,
+    QuizExtension,
+    QuizQuestion,
+    QuizReport,
+    QuizStatistic,
+    QuizSubmission,
+    QuizSubmissionEvent,
+    QuizSubmissionQuestion,
+)
 from canvasapi.course import Course, CourseNickname, LatePolicy, Page
 
 from canvasapi.group import Group, GroupCategory, GroupMembership
@@ -47,7 +58,7 @@ class TestCaliperGeneration():
         self.USER_ID = 115753
         # test caliper events course (pjamason and testacct1 teachers)
         self.COURSE_ID = 20774
-        self.ASSIGNMENT_ID = 192792
+        self.ASSIGNMENT_ID = 192792  # week 1 assignment
         self.TESTACCT444_NUMERIC_ID = 122382
 
         # Initialize a new Canvas object
@@ -188,7 +199,6 @@ class TestCaliperGeneration():
         assert isinstance(deleted_user, User)
 
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/discussion_topic_created.json
-    # if they are assigned that unique id
     def test_create_and_delete_discussion_topic(self, prepare_canvas):
 
         title_str = "Test Topic 2"
@@ -202,7 +212,74 @@ class TestCaliperGeneration():
         assert title_str == discussion.title
 
         response = discussion.delete()
-        #assert response == True
+
+    def test_reply_discussion_topic(self, prepare_canvas):
+
+        topic_id = 250552  # test topic 1
+        discussion = self.course.get_discussion_topic(topic_id)
+
+        # print(discussion)
+        assert isinstance(discussion, DiscussionTopic)
+        assert (hasattr(discussion, "course_id"))
+
+        entry = discussion.post_entry()
+        print(entry)
+
+    # grade change
+    # via user assignment score change
+    def test_grade_change_assignment(self, prepare_canvas):
+        assignment = self.course.get_assignment(self.ASSIGNMENT_ID)
+
+        submission = assignment.get_submission(self.USER_ID)
+        score = 5
+        submission.edit(submission={'posted_grade': score})
+
+        submission = assignment.get_submission(self.USER_ID)
+        score = 7
+        submission.edit(submission={'posted_grade': score})
+        print(Submission)
+        assert int(submission.grade) == score
+
+    # try a quiz submission
+    # NOT WORKING what to use for ids?
+    def test_grade_change_quiz(self, prepare_canvas):
+        submission = QuizSubmission(
+            self.canvas._Canvas__requester,
+            {
+                "id": 1,
+                "quiz_id": 34289,  # use week 1 quiz in course
+                "user_id": self.USER_ID,
+                "course_id": self.COURSE_ID,
+                "submission_id": 1,
+                "attempt": 3,
+                "validation_token": "this is a validation token",
+                "manually_unlocked": None,
+                "score": 7,
+            },
+        )
+
+        print(submission)
+
+        returned_submission = submission.update_score_and_comments(
+            quiz_submissions=[
+                {
+                    "attempt": 1,
+                    "fudge_points": 1,
+                    "questions": {
+                        "question id 1": {"score": 1, "comment": "question 1 comment"},
+                        "question id 2": {"score": 2, "comment": "question 2 comment"},
+                        "question id 3": {"score": 3, "comment": "question 3 comment"},
+                    },
+                }
+            ]
+        )
+
+        assert isinstance(returned_submission, QuizSubmission)
+        #self.assertTrue(hasattr(submission, "id"))
+        #self.assertTrue(hasattr(submission, "attempt"))
+        #self.assertTrue(hasattr(submission, "quiz_id"))
+        #self.assertTrue(hasattr(submission, "validation_token"))
+        #self.assertEqual(submission.score, 7)
 
     # TODO: attachment (file) created
     # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/attachment_created.json
