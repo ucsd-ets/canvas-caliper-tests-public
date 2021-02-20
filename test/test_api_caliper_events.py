@@ -240,6 +240,17 @@ class TestCaliperGeneration():
         print(Submission)
         assert int(submission.grade) == score
 
+    # https://d1raj86qipxohr.cloudfront.net/production/caliper/event-types/asset_accessed.json
+    def test_asset_accessed_get_page(self, prepare_canvas):
+
+        url = "start-here"
+        page = self.course.get_page(url)
+
+        assert isinstance(page, Page)
+
+    #########
+    # below not working
+
     # try a quiz submission
     # NOT WORKING what to use for ids?
     def test_grade_change_quiz(self, prepare_canvas):
