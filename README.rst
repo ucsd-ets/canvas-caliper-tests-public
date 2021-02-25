@@ -1,25 +1,19 @@
 *************************
 Canvas Caliper Tests
 *************************
-<!-- PROJECT LOGO -->
-<br />
-<p align="center">
 
-  <h3 align="center">online.ucsd.edu UI tests</h3>
-
-  <p align="center">
+canvas.ucsd.edu UI tests
+############
     UI tests for the canvas.ucsd.edu platform.  Uses sauce labs for remote testing.
-    <br />
     <a href="https://github.com/github_username/repo/issues">Report Bug</a>
     ·
     <a href="https://github.com/github_username/repo/issues">Request Feature</a>
-  </p>
-</p>
 
-<!-- ABOUT THE PROJECT -->
-## About The Project
+About The Project
+############
 
-### Built With
+Built With
+############
 
 * [pytest]()
 * [selenium]()
@@ -28,12 +22,13 @@ Canvas Caliper Tests
 * [jenkins]() Currently configured to not run (refer to configurations /job/canvas-caliper-tests/configure) Future - once test are ready to autorun add a cron job
 
 
-<!-- GETTING STARTED -->
-## Getting Started
+Getting Started
+############
 
 To get a local copy up and running follow these simple steps.
 
-### Prerequisites
+Prerequisites
+############
 
 * pip
 ```sh
@@ -100,22 +95,25 @@ wheel              0.36.2
 zipp               3.4.0
 ```
 
-<!-- USAGE EXAMPLES -->
-## Usage
+Usage
+############
 ```sh
 cd test
 python -m pytest -m desktop --device=desktop --browser=chrome <file>.py -k <test>
 ```
 
-<!-- RESULTS -->
-## Viewing Test Results on Sauce Labs
+
+Viewing Test Results on Sauce Labs
+############
 Contact the contact person below to get access to the ETS Sauce Labs account.  View the test reults at https://app.saucelabs.com/dashboard/tests/vdc.  View the test stats at https://app.saucelabs.com/analytics/test-overview.
 
-<!-- NEW TESTS -->
-## Adding New Caliper Event Generation Tests 
+
+Adding New Caliper Event Generation Tests 
+############
 New test classes go in the canvas-caliper-tests-public/test/ subdir.  Classes subclass DesktopBaseTest.  Desktop method names should include "caliper" and end with _desktop() argument to use pytest.mark to run the respective tests.
 
-## Resources
+Resources
+############
 <ul>
     <li><a href="https://canvas.ucsd.edu/courses/20774"> Canvas Caliper Test Course</a></li>
     <li>https://github.com/ucsd-ets/canvas-caliper-tests-public/wiki</li>
@@ -125,6 +123,6 @@ New test classes go in the canvas-caliper-tests-public/test/ subdir.  Classes su
     <li>https://canvas.ucsd.edu/doc/api/live#!/courses.json</li>
 </ul>
 
-<!-- CONTACT -->
-## Contact
+Contact
+############
 Paul Jamason (pjamason@ucsd.edu)
