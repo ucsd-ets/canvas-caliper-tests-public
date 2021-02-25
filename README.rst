@@ -114,14 +114,12 @@ New test classes go in the canvas-caliper-tests-public/test/ subdir.  Classes su
 
 Resources
 ############
-<ul>
-    <li><a href="https://canvas.ucsd.edu/courses/20774"> Canvas Caliper Test Course</a></li>
-    <li>https://github.com/ucsd-ets/canvas-caliper-tests-public/wiki</li>
-    <li>https://github.com/ucsd-ets/canvas-caliper-tests-public</li>
-    <li>https://github.com/ucfopen/canvasapi</li>
-    <li>https://canvasapi.readthedocs.io/en/stable/getting-started.html</li>
-    <li>https://canvas.ucsd.edu/doc/api/live#!/courses.json</li>
-</ul>
+https://canvas.ucsd.edu/courses/20774"> Canvas Caliper Test Course
+https://github.com/ucsd-ets/canvas-caliper-tests-public/wiki
+https://github.com/ucsd-ets/canvas-caliper-tests-public
+https://github.com/ucfopen/canvasapi
+https://canvasapi.readthedocs.io/en/stable/getting-started.html
+https://canvas.ucsd.edu/doc/api/live#!/courses.json
 
 Contact
 ############
