@@ -2,8 +2,10 @@ from basetest import BaseTest, DesktopBaseTest
 import re
 import pytest
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 import os
 
 # Selenium 3.14+ doesn't enable certificate checking
@@ -64,112 +66,88 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
     def test_canvas_assignment_events_caliper_desktop(self):
         try:
             super().login_sso()
-            self.__access_test_events_course()
+            super().wait_for_ajax(self.driver)
+            self.driver.get("https://canvas.ucsd.edu/courses/20774/assignments")
 
-            # wait for page to load, click assignments in left navbar
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[2]/nav/ul/li[5]/a"
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.visibility_of_element_located(
-                    # (By.CLASS_NAME, "assignments")
-                    (By.XPATH, xpath)
-                )
-            )
-
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
-            ).click()
-
-            WebDriverWait(self.driver, self.SECONDS_WAIT).until(
-                expected_conditions.visibility_of_element_located(
-                    (By.CLASS_NAME, "assignment_group")
-                )
-            )
+            WebDriverWait(self.driver, 10).until(
+                expected_conditions.presence_of_element_located((By.XPATH, "//a[@title='Add Assignment to Assignments']")))
 
             # click on add assigmnent
             # can't get this to work ON SAFARI 11 - new paget not loading
             # safari shows "your browser does not meet the minimum requirements
             # for Canvas" message
-            xpath = '//*[@title="Add Assignment"]'
+            xpath = "//a[@title='Add Assignment to Assignments']"
 
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable((By.XPATH, xpath))
             ).click()
 
-            # wait for assignment name input field visible
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[1]/div/input"
+            super().wait_for_ajax(self.driver)
 
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.visibility_of_element_located(
-                    # (By.ID, "assignment_name")
-                    (By.XPATH, xpath)
-                )
-            )
+            WebDriverWait(self.driver, 7).until(
+                expected_conditions.presence_of_element_located((By.XPATH, "//input[@name='name']")))
 
-            # click in assignment name input field, set assign name
-            self.driver.find_element(By.ID, "assignment_name").click()
-            # self.driver.find_element(By.XPATH, xpath).click()
             self.driver.find_element(
-                By.ID, "assignment_name").send_keys("Test Assignment 1")
+                By.XPATH, "//span[text()='close']/following::input").send_keys("Test1A")
+            # Save assignment
+            self.driver.find_element(By.XPATH, "//form[@id='ui-id-2']/div[1]/div[2]/button[4]").click()
 
-            # click "text entry" checkbox in "online entry options"
-            # self.driver.find_element(By.ID, "assignment_text_entry").click()
-            element = self.driver.find_element(By.ID, "assignment_text_entry")
-            # super().move_to_element(element)
-            element.click()
+            super().wait_for_ajax(self.driver)
 
-            # save assignment (EVENT: assignment_created)
-            # super().scroll_to_bottom()
-            # xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[3]/div[2]/button[3]"
-            # element = self.driver.find_element(By.XPATH, xpath)
-            # super().move_to_element(element)
+            elements = self.driver.find_elements(By.LINK_TEXT, "Test1A")
+            assert len(elements) > 0
 
-            xpath = "//button[@type='submit']"
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable((By.XPATH, xpath))
-            ).click()
+            self.driver.find_element(By.ID, "search_term").send_keys("Test1A")
+            # Click 3 dot
+            self.driver.find_element(By.XPATH, "//li[contains(@class,'assignment search_show')]//div[contains(@class,'ig-admin')]/div/button").click()
+            # Click edit
+            self.driver.find_element(By.XPATH, "//li[@class='ui-menu-item']//a").click()
 
-            # assignment override - edit, modify assign groups, save
+            super().wait_for_ajax(self.driver)
+            # Select More Options button
+            actions = ActionChains(self.driver) 
+            actions.send_keys(Keys.TAB * 4).send_keys(Keys.ENTER)
+            actions.perform()
+            super().wait_for_ajax(self.driver)
+
+            # Switch to iframe
+            elements = self.driver.find_elements(By.XPATH, "//iframe[@id='assignment_description_ifr']")
+            assert len(elements) > 0
+
+            ## You have to switch to the iframe like so: ##
+            self.driver.switch_to.frame("assignment_description_ifr")
+
+            # Add content to body
+            self.driver.find_element(By.ID, "tinymce").send_keys("Edit Body")
+
+            ## Switch back to the "default content" (that is, out of the iframes) ##
+            self.driver.switch_to.default_content()
             self.__assignment_override(3)
+            super().wait_for_ajax(self.driver)
 
-            # assignment override updated - edit, modify assign groups, save
+            elements = self.driver.find_elements(By.XPATH, "//td[text()='Canvas Caliper Events Testing']")
+            assert len(elements) > 0
+            
+            self.driver.find_element(By.XPATH, "//a[@class='btn edit_assignment_link']").click()
+            super().wait_for_ajax(self.driver)           
             self.__assignment_override(2)
+            super().wait_for_ajax(self.driver)
 
-            # TODO delete assignment
+            elements = self.driver.find_elements(By.XPATH, "//td[text()='Everyone']")
+            assert len(elements) > 0
 
-            # wait for page with edit assignment button to load, click it
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/div[1]/div[2]/a"
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    # (By.CLASS_NAME, "edit_assigment_link"))
-                    (By.XPATH, xpath))
-            ).click()
+            self.driver.find_element(By.XPATH, "//a[@class='btn edit_assignment_link']").click()
+            super().wait_for_ajax(self.driver) 
+            self.driver.find_element(By.XPATH, "//button[@class='al-trigger btn']").click()
+            self.driver.find_element(By.XPATH, "//a[contains(@class,'delete_assignment_link ui-corner-all')]").click()
 
-            # wait for page to load, check for an element unique to this page (dot menu is
-            # on preceding page too):
-            # wait for assignment name input field visible
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[1]/div/input"
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.visibility_of_element_located(
-                    # (By.ID, "assignment_name")
-                    (By.XPATH, xpath)
-                )
-            )
+            assert self.driver.switch_to.alert.text == "Are you sure you want to delete this assignment?"
+            self.driver.switch_to.alert.accept()
+            super().wait_for_ajax(self.driver)
 
-            # click dot menu
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/div/div[2]/div/button"
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.XPATH, xpath))
-                # (By.CLASS_NAME, "icon-more"))
-            ).click()
-
-            # click delete assignment
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/div/div[2]/div/ul/li/a"
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    # (By.CLASS_NAME, "delete_assigment_link"))
-                    (By.XPATH, xpath))
-            ).click()
+            self.driver.find_element(By.ID, "search_term").send_keys("Test1A")
+            elements = self.driver.find_elements(By.XPATH, "//a[text()='Test1A']")
+            assert len(elements) == 0
 
         except Exception as e:
             print("exception")
@@ -798,27 +776,6 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
     def __assignment_override(self, index_number):
         try:
 
-            # wait for page with edit assignment button to load, click it
-            xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/div[1]/div[2]/a"
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    # (By.CLASS_NAME, "edit_assigment_link"))
-                    (By.XPATH, xpath))
-            ).click()
-
-            # wait for assign section to load
-            # note that it loads, then iframe loads, pushing it down
-            # try moving to it again
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.presence_of_element_located(
-                    (By.ID, "assign-to-label")
-                )
-            )
-            super().wait_for_ajax(self.driver)
-            element = self.driver.find_element(
-                By.ID, "assign-to-label")
-            super().move_to_element(element)
-
             # assignment override - replace 'Everyone' with section
             # click 'x' for 'Everyone' in 'assign to' box
             # FAILING here (wasn't before): not seeing "everyone " selected after we save it previously
@@ -828,19 +785,11 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             super().move_to_element(element)
             element.click()
 
-            # click in the assign field
-            WebDriverWait(self.driver, super().SECONDS_WAIT).until(
-                expected_conditions.element_to_be_clickable(
-                    (By.CLASS_NAME, "ic-tokeninput"))
-            ).click()
-
             # wait for div (not select-based) section list dropdown
             super().wait_for_ajax(self.driver)
 
             # sections: course name is //*[@id="ic-tokeninput-list-1"]/div[3]
             # everybody is [2]
-            # /html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[6]/div[2]/div/div/div/div[1]/div[2]/ul/li/div/div/div[2]
-            # /html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[6]/div[2]/div/div/div/div[1]/div[2]/ul/li/div/div/div[3]
             xpath = "/html/body/div[2]/div[2]/div[2]/div[3]/div[1]/div/div[1]/form/div[1]/div[6]/div[2]/div/div/div/div[1]/div[2]/ul/li/div/div/div[" + str(
                 index_number) + "]"
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
@@ -864,6 +813,12 @@ class TestDesktopCaliperEvents(DesktopBaseTest):
             WebDriverWait(self.driver, super().SECONDS_WAIT).until(
                 expected_conditions.element_to_be_clickable((By.XPATH, xpath))
             ).click()
+
+            # Save changes
+            # Select More Options button
+            actions = ActionChains(self.driver) 
+            actions.send_keys(Keys.TAB * 18).send_keys(Keys.ENTER)
+            actions.perform()
 
         except Exception:
             raise Exception
